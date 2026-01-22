@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAVID MYALIK | Sideways Always</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF0000;
+            --font-display: 'Anton', sans-serif;
+            --font-body: 'Oswald', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: var(--font-body);
+            margin: 0;
+            overflow-x: hidden;
+        }
+        h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: -0.05em; }
+        .glitch-text { position: relative; }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .glitch-text::before {
+            left: 2px; text-shadow: -1px 0 #ff0000;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim {
+            0% { clip: rect(42px, 9999px, 44px, 0); }
+            100% { clip: rect(4px, 9999px, 91px, 0); }
+        }
+        .clip-slant { clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); }
+        .nav-link { font-family: var(--font-display); transition: color 0.3s; }
+        .nav-link:hover { color: var(--primary); }
+        .product-card { transition: transform 0.3s; }
+        .product-card:hover { transform: translateY(-5px); }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body>
+    <nav class="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="#" class="text-2xl font-display italic tracking-tighter">DAVID <span class="text-red-600">MYALIK</span></a>
+            <div class="hidden md:flex gap-8">
+                <a href="#home" class="nav-link uppercase tracking-widest">Home</a>
+                <a href="#shop" class="nav-link uppercase tracking-widest">Shop</a>
+                <a href="#about" class="nav-link uppercase tracking-widest">About</a>
+                <a href="#contact" class="nav-link uppercase tracking-widest">Contact</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="relative hover:text-red-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
+        <img src="https://images.unsplash.com/photo-1621213327685-6d09e99c1040?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover grayscale opacity-60">
+        <div class="relative z-20 text-center px-6">
+            <h1 class="text-[15vw] leading-none font-black glitch-text" data-text="MYALIK">MYALIK</h1>
+            <p class="mt-4 text-xl md:text-2xl font-mono text-red-600 uppercase tracking-[0.5em]">Sideways Always • Est. 2026</p>
+            <a href="#shop" class="inline-block mt-12 px-12 py-4 bg-red-600 text-white font-display text-xl uppercase tracking-widest hover:bg-white hover:text-black transition-all">Shop Drop</a>
+        </div>
+    </section>
+
+    <section id="shop" class="py-24 px-6 bg-black border-t border-white/10">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-6xl mb-12">Latest Drops</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12" id="product-grid">
+                <!-- Products will be injected here -->
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-24 px-6 bg-[#0a0a0a]">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-6xl mb-6">The Driver</h2>
+                <p class="text-xl text-white/70 mb-8 font-light leading-relaxed">Living my dream life, building cool cars one project at a time. From the S13 to the track, we push the limits of what's possible sideways.</p>
+                <div class="flex gap-6">
+                    <a href="https://www.youtube.com/@davidmyalik" target="_blank" class="text-red-600 hover:text-white transition-colors uppercase font-display tracking-widest text-lg">YouTube</a>
+                    <a href="#" class="text-red-600 hover:text-white transition-colors uppercase font-display tracking-widest text-lg">Instagram</a>
+                </div>
+            </div>
+            <div class="relative">
+                <div class="absolute -inset-4 border border-red-600/30"></div>
+                <img src="https://images.unsplash.com/photo-1541443131876-44b03de101c5?q=80&w=2070&auto=format&fit=crop" class="relative z-10 w-full grayscale contrast-125">
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-24 px-6 bg-black">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-6xl mb-6">Get in Touch</h2>
+            <p class="text-white/60 font-mono mb-12">Business inquiries & Collabs</p>
+            <form class="space-y-6" onsubmit="event.preventDefault(); alert('Message sent transmission! (Demo)');">
+                <input type="text" placeholder="NAME" class="w-full bg-white/5 border border-white/10 px-6 py-4 font-mono focus:outline-none focus:border-red-600 transition-colors">
+                <input type="email" placeholder="EMAIL" class="w-full bg-white/5 border border-white/10 px-6 py-4 font-mono focus:outline-none focus:border-red-600 transition-colors">
+                <textarea placeholder="MESSAGE" rows="5" class="w-full bg-white/5 border border-white/10 px-6 py-4 font-mono focus:outline-none focus:border-red-600 transition-colors"></textarea>
+                <button type="submit" class="w-full bg-red-600 text-white font-display text-xl uppercase tracking-widest py-4 hover:bg-white hover:text-black transition-colors">Send Transmission</button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="py-12 px-6 border-t border-white/10 text-center">
+        <p class="font-mono text-white/40 tracking-widest uppercase">© Copyright 2026 DAVID MYALIK. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        const products = [
+            { id: 1, name: "Signature S13 Hoodie", price: 55, img: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800" },
+            { id: 2, name: "Tire Slayer Tee", price: 30, img: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800" },
+            { id: 3, name: "Drift Team Sticker Pack", price: 12, img: "https://images.unsplash.com/photo-1572375992501-4f0f235addaa?w=800" }
+        ];
+
+        const grid = document.getElementById('product-grid');
+        products.forEach(p => {
+            grid.innerHTML += `
+                <div class="product-card group cursor-pointer">
+                    <div class="relative aspect-[3/4] overflow-hidden bg-white/5 border border-white/10">
+                        <img src="${p.img}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0">
+                        <div class="absolute bottom-0 left-0 w-full p-6 translate-y-full group-hover:translate-y-0 transition-transform bg-red-600">
+                            <span class="font-display text-white uppercase tracking-widest text-lg">Add to Cart</span>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-between items-start">
+                        <h3 class="text-2xl">${p.name}</h3>
+                        <span class="font-mono text-red-600 text-xl">$${p.price}</span>
+                    </div>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
