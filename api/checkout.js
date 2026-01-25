@@ -1,0 +1,44 @@
+// api/checkout.js
+const stripe = require('stripe')('sk_test_YOUR_SECRET_KEY_HERE'); // <-- PUT KEY HERE
+
+exports.handler = async (event) => {
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: 'Method Not Allowed' };
+  }
+
+  try {
+    const data = JSON.parse(event.body);
+    const cart = data.cart;
+
+    const lineItems = cart.map(item => ({
+      price_data: {
+        currency: 'usd',
+        product_data: {
+          name: item.name,
+          images: [item.img],
+        },
+        unit_amount: Math.round(item.price * 100),
+      },
+      quantity: item.qty,
+    }));
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      mode: 'payment',
+      success_url: `${event.headers.host}/#success`,
+      cancel_url: `${event.headers.host}/#shop`,
+    });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ url: session.url }),
+    };
+
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: error.message }),
+    };
+  }
+};
