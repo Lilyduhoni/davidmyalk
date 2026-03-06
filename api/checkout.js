@@ -1,5 +1,5 @@
 // api/checkout.js
-const stripe = require('stripe')('sk_test_51StH7yAd1kzWTpGQj2c9uRKXpX4uJZYbQHG5feHydUAuthzZz9KM9CGhvhoba2HhePHh3YST3yFjy079iALNmZvX00DvHRQ1bKsk_test_51StH7yAd1kzWTpGQj2c9uRKXpX4uJZYbQHG5feHydUAuthzZz9KM9CGhvhoba2HhePHh3YST3yFjy079iALNmZvX00DvHRQ1bK'); // <-- PUT KEY HERE
+const stripe = require('stripe')('sk_test_51T7aEGB9YWRWqBOnfewaL31hksdyb6ZKSsf45ErssZTwSm6OVhr8pi7FpY4CkxaIltJrhfBLF2gyCgvQ69MjidE100PsTRDw9U'); // <-- PUT KEY HERE
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
