@@ -503,7 +503,36 @@ app.put('/api/admin/orders/:id/status', requireAdmin, async (req, res) => {
   const { status, trackingNumber } = req.body;
   const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
   if (!validStatuses.includes(status)) return res.status(400).json({ error: 'Invalid status' });
+  const client = await pool.connect();
   try {
+    await client.query('BEGIN');
+    const currentOrder = await client.query('SELECT id, status FROM orders WHERE id = $1', [req.params.id]);
+    if (currentOrder.rows.length === 0) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Order not found' }); }
+    const oldStatus = currentOrder.rows[0].status;
+
+    if (status === 'cancelled' && oldStatus !== 'cancelled') {
+      const items = await client.query('SELECT product_id, quantity FROM order_items WHERE order_id = $1', [req.params.id]);
+      for (const item of items.rows) {
+        if (item.product_id) {
+          await client.query('UPDATE products SET stock = stock + $1, updated_at = NOW() WHERE id = $2', [item.quantity, item.product_id]);
+        }
+      }
+    }
+
+    if (oldStatus === 'cancelled' && status !== 'cancelled') {
+      const items = await client.query('SELECT product_id, quantity FROM order_items WHERE order_id = $1', [req.params.id]);
+      for (const item of items.rows) {
+        if (item.product_id) {
+          const prod = await client.query('SELECT stock FROM products WHERE id = $1 FOR UPDATE', [item.product_id]);
+          if (prod.rows.length > 0 && prod.rows[0].stock < item.quantity) {
+            await client.query('ROLLBACK');
+            return res.status(400).json({ error: `Insufficient stock to un-cancel this order` });
+          }
+          await client.query('UPDATE products SET stock = stock - $1, updated_at = NOW() WHERE id = $2', [item.quantity, item.product_id]);
+        }
+      }
+    }
+
     const updates = ['status = $1', 'updated_at = NOW()'];
     const values = [status];
     if (trackingNumber !== undefined) {
@@ -511,14 +540,17 @@ app.put('/api/admin/orders/:id/status', requireAdmin, async (req, res) => {
       values.push(trackingNumber);
     }
     values.push(req.params.id);
-    const result = await pool.query(
+    const result = await client.query(
       `UPDATE orders SET ${updates.join(', ')} WHERE id = $${values.length} RETURNING *`,
       values
     );
-    if (result.rows.length === 0) return res.status(404).json({ error: 'Order not found' });
+    await client.query('COMMIT');
     res.json(result.rows[0]);
   } catch (err) {
+    await client.query('ROLLBACK');
     res.status(500).json({ error: 'Server error' });
+  } finally {
+    client.release();
   }
 });
 
@@ -529,6 +561,48 @@ app.get('/api/settings/shipping', async (req, res) => {
     res.json({ shippingCost: cost });
   } catch (err) {
     res.json({ shippingCost: 15.00 });
+  }
+});
+
+app.get('/api/settings/grind', async (req, res) => {
+  try {
+    const result = await pool.query("SELECT key, value FROM site_settings WHERE key LIKE 'grind_%'");
+    const settings = {};
+    for (const row of result.rows) {
+      settings[row.key] = row.value;
+    }
+    res.json({
+      title: settings.grind_title || 'THE |GRIND',
+      text: settings.grind_text || "Building the S13 wasn't about the car. It was about the mindset. Sideways Always isn't just a brand; it's a commitment to the craft, the smoke, and the endless pursuit of the perfect line.",
+      quote: settings.grind_quote || "Every drift starts with a decision to let go of the straight line.",
+      image: settings.grind_image || "https://images.unsplash.com/photo-1544433100-3f0449492f25?q=80&w=2070&auto=format&fit=crop",
+      linkUrl: settings.grind_link_url || "https://www.youtube.com/@davidmyalik",
+      linkText: settings.grind_link_text || "Watch on YouTube"
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.put('/api/admin/settings/grind', requireAdmin, async (req, res) => {
+  const { title, text, quote, image, linkUrl, linkText } = req.body;
+  try {
+    const pairs = [
+      ['grind_title', title],
+      ['grind_text', text],
+      ['grind_quote', quote],
+      ['grind_image', image],
+      ['grind_link_url', linkUrl],
+      ['grind_link_text', linkText]
+    ];
+    for (const [key, value] of pairs) {
+      if (value !== undefined) {
+        await pool.query("INSERT INTO site_settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2", [key, value]);
+      }
+    }
+    res.json({ message: 'Grind section updated' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
@@ -545,13 +619,27 @@ app.put('/api/admin/settings/shipping', requireAdmin, async (req, res) => {
 });
 
 app.delete('/api/admin/orders/:id', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
   try {
-    const order = await pool.query('SELECT id FROM orders WHERE id = $1', [req.params.id]);
-    if (order.rows.length === 0) return res.status(404).json({ error: 'Order not found' });
-    await pool.query('DELETE FROM orders WHERE id = $1', [req.params.id]);
-    res.json({ message: 'Order deleted' });
+    await client.query('BEGIN');
+    const order = await client.query('SELECT id, status FROM orders WHERE id = $1', [req.params.id]);
+    if (order.rows.length === 0) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Order not found' }); }
+    if (order.rows[0].status !== 'cancelled') {
+      const items = await client.query('SELECT product_id, quantity FROM order_items WHERE order_id = $1', [req.params.id]);
+      for (const item of items.rows) {
+        if (item.product_id) {
+          await client.query('UPDATE products SET stock = stock + $1, updated_at = NOW() WHERE id = $2', [item.quantity, item.product_id]);
+        }
+      }
+    }
+    await client.query('DELETE FROM orders WHERE id = $1', [req.params.id]);
+    await client.query('COMMIT');
+    res.json({ message: 'Order deleted and stock restored' });
   } catch (err) {
+    await client.query('ROLLBACK');
     res.status(500).json({ error: 'Server error' });
+  } finally {
+    client.release();
   }
 });
 

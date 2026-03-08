@@ -368,6 +368,41 @@
                     </div>
                     <div id="shipping-save-status" class="font-mono text-xs text-muted" style="margin-top:10px;"></div>
                 </div>
+
+                <div class="card" style="max-width:700px;margin-top:24px;">
+                    <h3 style="font-size:16px;margin-bottom:16px;font-family:var(--font-display);">THE GRIND <span class="text-red">SECTION</span></h3>
+                    <p class="text-muted font-mono text-xs" style="margin-bottom:16px;">Edit the "The Grind" section on the homepage. Use a pipe (|) in the title to make the second part red, e.g. "THE |GRIND".</p>
+
+                    <div class="mb-4">
+                        <label class="input-label">SECTION TITLE</label>
+                        <input type="text" class="input-field" id="grind-edit-title" placeholder="THE |GRIND">
+                    </div>
+                    <div class="mb-4">
+                        <label class="input-label">MAIN TEXT</label>
+                        <textarea class="input-field" id="grind-edit-text" style="min-height:100px;" placeholder="The main paragraph text..."></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="input-label">QUOTE</label>
+                        <input type="text" class="input-field" id="grind-edit-quote" placeholder="Every drift starts with a decision...">
+                    </div>
+                    <div class="mb-4">
+                        <label class="input-label">IMAGE URL</label>
+                        <input type="text" class="input-field" id="grind-edit-image" placeholder="https://...">
+                        <div id="grind-image-preview" style="margin-top:10px;"></div>
+                    </div>
+                    <div class="grid-2 mb-4">
+                        <div>
+                            <label class="input-label">LINK URL</label>
+                            <input type="text" class="input-field" id="grind-edit-link-url" placeholder="https://www.youtube.com/...">
+                        </div>
+                        <div>
+                            <label class="input-label">LINK TEXT</label>
+                            <input type="text" class="input-field" id="grind-edit-link-text" placeholder="Watch on YouTube">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveGrindSection()">SAVE GRIND SECTION</button>
+                    <div id="grind-save-status" class="font-mono text-xs text-muted" style="margin-top:10px;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -487,10 +522,53 @@
 
         async function loadSettings() {
             try {
-                const res = await fetch('/api/settings/shipping');
-                const data = await res.json();
-                document.getElementById('settings-shipping-cost').value = data.shippingCost.toFixed(2);
+                const [shipRes, grindRes] = await Promise.all([
+                    fetch('/api/settings/shipping'),
+                    fetch('/api/settings/grind')
+                ]);
+                const shipData = await shipRes.json();
+                document.getElementById('settings-shipping-cost').value = shipData.shippingCost.toFixed(2);
+                const grindData = await grindRes.json();
+                document.getElementById('grind-edit-title').value = grindData.title;
+                document.getElementById('grind-edit-text').value = grindData.text;
+                document.getElementById('grind-edit-quote').value = grindData.quote;
+                document.getElementById('grind-edit-image').value = grindData.image;
+                document.getElementById('grind-edit-link-url').value = grindData.linkUrl;
+                document.getElementById('grind-edit-link-text').value = grindData.linkText;
+                if (grindData.image) {
+                    document.getElementById('grind-image-preview').innerHTML = '<img src="' + grindData.image + '" style="max-width:200px;max-height:120px;border-radius:8px;border:1px solid var(--border);" onerror="this.style.display=\'none\'">';
+                }
             } catch(e) {}
+        }
+
+        async function saveGrindSection() {
+            const payload = {
+                title: document.getElementById('grind-edit-title').value,
+                text: document.getElementById('grind-edit-text').value,
+                quote: document.getElementById('grind-edit-quote').value,
+                image: document.getElementById('grind-edit-image').value,
+                linkUrl: document.getElementById('grind-edit-link-url').value,
+                linkText: document.getElementById('grind-edit-link-text').value
+            };
+            try {
+                const res = await fetch('/api/admin/settings/grind', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    showToast('Grind section updated');
+                    document.getElementById('grind-save-status').textContent = 'Saved successfully';
+                    if (payload.image) {
+                        document.getElementById('grind-image-preview').innerHTML = '<img src="' + payload.image + '" style="max-width:200px;max-height:120px;border-radius:8px;border:1px solid var(--border);" onerror="this.style.display=\'none\'">';
+                    }
+                } else {
+                    const data = await res.json();
+                    showToast(data.error || 'Failed to save', 'error');
+                }
+            } catch (err) {
+                showToast('Failed to save', 'error');
+            }
         }
 
         async function saveShippingCost() {
