@@ -15,8 +15,9 @@ const PORT = 5000;
 
 initDatabase();
 
-const uploadsDir = path.join(__dirname, 'public', 'uploads');
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+const isVercel = !!process.env.VERCEL;
+const uploadsDir = path.join(isVercel ? '/tmp' : __dirname, isVercel ? 'uploads' : 'public/uploads');
+try { if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true }); } catch (e) {}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadsDir),
@@ -526,6 +527,14 @@ app.post('/api/admin/upload', requireAdmin, (req, res) => {
       return res.status(400).json({ error: err.message || 'Upload failed' });
     }
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    if (isVercel) {
+      const filePath = path.join(uploadsDir, req.file.filename);
+      const fileData = fs.readFileSync(filePath);
+      const base64 = fileData.toString('base64');
+      const mimeType = req.file.mimetype || 'image/jpeg';
+      fs.unlinkSync(filePath);
+      return res.json({ url: `data:${mimeType};base64,${base64}` });
+    }
     res.json({ url: `/uploads/${req.file.filename}` });
   });
 });
