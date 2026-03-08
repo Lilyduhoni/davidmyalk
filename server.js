@@ -25,7 +25,15 @@ app.use(session({
   }
 }));
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use((req, res, next) => {
+  res.locals.baseUrl = `${req.protocol}://${req.get('host')}`;
+  next();
+});
+
+app.use(express.static(path.join(__dirname, 'public'), {
+  index: false,
+  extensions: []
+}));
 
 function requireAuth(req, res, next) {
   if (!req.session.userId) return res.status(401).json({ error: 'Not authenticated' });
@@ -525,13 +533,27 @@ app.post('/.netlify/functions/checkout', requireAuth, async (req, res) => {
   }
 });
 
+function serveHtmlWithOG(req, res, filePath) {
+  const fs = require('fs');
+  fs.readFile(filePath, 'utf8', (err, html) => {
+    if (err) return res.status(500).send('Server error');
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    html = html.replace(/content="\/images\//g, `content="${baseUrl}/images/`);
+    html = html.replace(/content="\/css\//g, `content="${baseUrl}/css/`);
+    html = html.replace(/<meta property="og:url"[^>]*>/g, '');
+    const ogUrl = `<meta property="og:url" content="${baseUrl}${req.path}">`;
+    html = html.replace('</head>', `    ${ogUrl}\n</head>`);
+    res.type('html').send(html);
+  });
+}
+
 app.get('*', (req, res) => {
   const page = req.path.substring(1);
   const validPages = ['login', 'signup', 'forgot-password', 'reset-password', 'dashboard', 'admin', 'help-center', 'shipping-info', 'returns'];
   if (validPages.includes(page)) {
-    return res.sendFile(path.join(__dirname, 'public', `${page}.html`));
+    return serveHtmlWithOG(req, res, path.join(__dirname, 'public', `${page}.html`));
   }
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  serveHtmlWithOG(req, res, path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {
