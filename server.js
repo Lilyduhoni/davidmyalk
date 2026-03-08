@@ -6,11 +6,20 @@ const crypto = require('crypto');
 const path = require('path');
 const pool = require('./db');
 
+const initDatabase = require('./db-init');
+
 const app = express();
 const PORT = 5000;
 
+initDatabase();
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const isProduction = process.env.NODE_ENV === 'production' || !!process.env.VERCEL;
+if (isProduction) {
+  app.set('trust proxy', 1);
+}
 
 app.use(session({
   store: new PgSession({ pool, tableName: 'session' }),
@@ -20,7 +29,7 @@ app.use(session({
   cookie: {
     maxAge: 30 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: false,
+    secure: isProduction,
     sameSite: 'lax'
   }
 }));
@@ -556,6 +565,10 @@ app.get('*', (req, res) => {
   serveHtmlWithOG(req, res, path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on http://0.0.0.0:${PORT}`);
-});
+if (process.env.VERCEL) {
+  module.exports = app;
+} else {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on http://0.0.0.0:${PORT}`);
+  });
+}

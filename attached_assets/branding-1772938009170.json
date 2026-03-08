@@ -1,0 +1,136 @@
+{
+  "colorScheme": "dark",
+  "fonts": [
+    {
+      "family": "JetBrains Mono",
+      "role": "monospace"
+    },
+    {
+      "family": "Anton",
+      "role": "heading"
+    },
+    {
+      "family": "Oswald",
+      "role": "body"
+    }
+  ],
+  "colors": {
+    "primary": "#0F1623",
+    "accent": "#FF0000",
+    "background": "#050810",
+    "textPrimary": "#050810",
+    "link": "#FF0000"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Oswald",
+      "heading": "Anton"
+    },
+    "fontStacks": {
+      "heading": [
+        "Anton",
+        "sans-serif"
+      ],
+      "body": [
+        "Oswald",
+        "sans-serif"
+      ],
+      "paragraph": [
+        "JetBrains Mono",
+        "monospace"
+      ]
+    },
+    "fontSizes": {
+      "h1": "220px",
+      "h2": "24px",
+      "body": "11px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "0px"
+  },
+  "components": {
+    "input": {
+      "background": "#0D0F17",
+      "textColor": "#FFFFFF",
+      "borderColor": "#191C23",
+      "borderRadius": "0px",
+      "borderRadiusCorners": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomRight": "0px",
+        "bottomLeft": "0px"
+      },
+      "shadow": "none"
+    },
+    "buttonPrimary": {
+      "background": "#FF0000",
+      "textColor": "#FFFFFF",
+      "borderRadius": "0px",
+      "borderRadiusCorners": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomRight": "0px",
+        "bottomLeft": "0px"
+      },
+      "shadow": "rgba(255, 0, 0, 0.3) 0px 0px 40px 0px"
+    },
+    "buttonSecondary": {
+      "background": "#050810",
+      "textColor": "#FFFFFF",
+      "borderColor": "#191C23",
+      "borderRadius": "0px",
+      "borderRadiusCorners": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomRight": "0px",
+        "bottomLeft": "0px"
+      },
+      "shadow": "none"
+    }
+  },
+  "images": {
+    "logo": null,
+    "favicon": "File saved at: attached_assets/favicon.png",
+    "ogImage": "http://davidmyalk.vercel.app/images/og-image.png"
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": 1,
+      "text": "SHOP THE DROP",
+      "reasoning": "The button 'SHOP THE DROP' uses the vibrant accent color #FF0000, which is typically used for primary CTAs. The text is action-oriented, encouraging users to engage with the main purpose of the site, which is shopping."
+    },
+    "secondary": {
+      "index": 0,
+      "text": "CONTACT US",
+      "reasoning": "The button 'CONTACT US' uses a dark background color #050810, which is less vibrant and more subdued, making it suitable as a secondary action."
+    },
+    "confidence": 0.95
+  },
+  "personality": {
+    "tone": "bold",
+    "energy": "high",
+    "targetAudience": "enthusiasts of drift culture and apparel"
+  },
+  "designSystem": {
+    "framework": "custom",
+    "componentLibrary": ""
+  },
+  "confidence": {
+    "buttons": 0.95,
+    "colors": 0.9,
+    "overall": 0.925
+  },
+  "__llm_metadata": {
+    "logoSelection": {
+      "llmCalled": false,
+      "llmSucceeded": false,
+      "finalSource": "none"
+    },
+    "buttonClassification": {
+      "llmCalled": true,
+      "llmSucceeded": true
+    }
+  }
+}
