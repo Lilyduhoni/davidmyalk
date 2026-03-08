@@ -503,6 +503,68 @@ app.delete('/api/admin/products/:id', requireAdmin, async (req, res) => {
   }
 });
 
+app.delete('/api/admin/products/:id/permanent', requireAdmin, async (req, res) => {
+  try {
+    const orderCheck = await pool.query('SELECT COUNT(*) FROM order_items WHERE product_id = $1', [req.params.id]);
+    if (parseInt(orderCheck.rows[0].count) > 0) {
+      return res.status(400).json({ error: 'Cannot permanently delete a product that has been ordered. Deactivate it instead.' });
+    }
+    const product = await pool.query('SELECT name FROM products WHERE id = $1', [req.params.id]);
+    if (product.rows.length === 0) return res.status(404).json({ error: 'Product not found' });
+    await pool.query('DELETE FROM products WHERE id = $1', [req.params.id]);
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'delete_product', `Permanently deleted product #${req.params.id} "${product.rows[0].name}"`);
+    res.json({ message: 'Product permanently deleted' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.post('/api/admin/products/:id/duplicate', requireAdmin, async (req, res) => {
+  try {
+    const orig = await pool.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
+    if (orig.rows.length === 0) return res.status(404).json({ error: 'Product not found' });
+    const p = orig.rows[0];
+    const result = await pool.query(
+      `INSERT INTO products (name, description, price, image_url, category, stock, is_active)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [`${p.name} (Copy)`, p.description, p.price, p.image_url, p.category, 0, false]
+    );
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'duplicate_product', `Duplicated product #${req.params.id} "${p.name}" → new #${result.rows[0].id}`);
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.patch('/api/admin/products/:id/reactivate', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('UPDATE products SET is_active = true, updated_at = NOW() WHERE id = $1 RETURNING *', [req.params.id]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Product not found' });
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'reactivate_product', `Reactivated product #${req.params.id} "${result.rows[0].name}"`);
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.patch('/api/admin/products/:id/stock', requireAdmin, async (req, res) => {
+  const { stock } = req.body;
+  const s = parseInt(stock);
+  if (isNaN(s) || s < 0) return res.status(400).json({ error: 'Invalid stock value' });
+  try {
+    const result = await pool.query('UPDATE products SET stock = $1, updated_at = NOW() WHERE id = $2 RETURNING *', [s, req.params.id]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Product not found' });
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'update_stock', `Set stock for product #${req.params.id} to ${s}`);
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 app.get('/api/admin/orders', requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(

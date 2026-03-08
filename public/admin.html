@@ -12,6 +12,15 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
     <style>
+        .filter-tab {
+            background: transparent; border: 1px solid var(--border); color: var(--text-muted);
+            font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em;
+            padding: 6px 14px; cursor: pointer; transition: all 0.2s;
+        }
+        .filter-tab:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+        .filter-tab.active { background: var(--red); border-color: var(--red); color: #fff; }
+        .badge-active { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .badge-inactive { background: rgba(239,68,68,0.15); color: #ef4444; }
         .admin-header {
             display: flex; justify-content: space-between; align-items: flex-start;
             margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
@@ -302,8 +311,13 @@
                     </div>
                     <button class="btn btn-primary btn-sm" onclick="openProductModal()">ADD PRODUCT</button>
                 </div>
-                <div class="search-bar">
-                    <input type="text" class="search-input" placeholder="Search products..." id="product-search" oninput="filterProducts()">
+                <div class="search-bar" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                    <input type="text" class="search-input" placeholder="Search products..." id="product-search" oninput="filterProducts()" style="flex:1;">
+                    <div style="display:flex;gap:4px;" id="product-filter-tabs">
+                        <button class="btn btn-sm filter-tab active" data-filter="all" onclick="setProductFilter('all')">ALL</button>
+                        <button class="btn btn-sm filter-tab" data-filter="active" onclick="setProductFilter('active')">ACTIVE</button>
+                        <button class="btn btn-sm filter-tab" data-filter="inactive" onclick="setProductFilter('inactive')">INACTIVE</button>
+                    </div>
                 </div>
                 <div class="table-wrapper">
                     <table>
@@ -321,6 +335,7 @@
                         <h2 class="admin-title">ALL <span class="text-red">ORDERS</span></h2>
                         <p class="admin-subtitle">View and manage customer orders</p>
                     </div>
+                    <button class="btn btn-secondary btn-sm" onclick="exportOrdersCSV()">EXPORT CSV</button>
                 </div>
                 <div class="search-bar">
                     <input type="text" class="search-input" placeholder="Search orders by number, customer..." id="order-search" oninput="filterOrders()">
@@ -558,7 +573,11 @@
             delete_user: { label: 'Deleted User', color: '#ef4444', icon: 'x' },
             update_shipping: { label: 'Updated Shipping', color: '#06b6d4', icon: '$' },
             update_grind: { label: 'Updated Grind Section', color: '#06b6d4', icon: '~' },
-            update_socials: { label: 'Updated Social Links', color: '#06b6d4', icon: '~' }
+            update_socials: { label: 'Updated Social Links', color: '#06b6d4', icon: '~' },
+            delete_product: { label: 'Deleted Product', color: '#ef4444', icon: 'x' },
+            duplicate_product: { label: 'Duplicated Product', color: '#22c55e', icon: '+' },
+            update_stock: { label: 'Updated Stock', color: '#f59e0b', icon: '#' },
+            reactivate_product: { label: 'Reactivated Product', color: '#22c55e', icon: '+' }
         };
 
         async function loadLogs() {
@@ -778,12 +797,13 @@
                     </div></td>
                     <td><span class="badge badge-customer">${p.category || 'Uncategorized'}</span></td>
                     <td class="font-mono">$${parseFloat(p.price).toFixed(2)}</td>
-                    <td class="font-mono ${stockClass}">${stockText}</td>
+                    <td class="font-mono ${stockClass}" style="cursor:pointer;" onclick="quickStockEdit(${p.id}, ${p.stock}, this)" title="Click to edit stock">${stockText}</td>
                     <td><span class="badge ${p.is_active ? 'badge-active' : 'badge-inactive'}">${p.is_active ? 'Active' : 'Inactive'}</span></td>
                     <td>
-                        <div style="display:flex;gap:8px;">
-                            <button class="btn btn-secondary btn-sm" onclick="editProduct(${p.id})">EDIT</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})" style="clip-path:none;">DEL</button>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                            <button class="btn btn-secondary btn-sm" onclick="editProduct(${p.id})" title="Edit">EDIT</button>
+                            <button class="btn btn-secondary btn-sm" onclick="duplicateProduct(${p.id})" title="Duplicate" style="background:rgba(59,130,246,0.1);color:#3b82f6;border-color:#3b82f6;">DUP</button>
+                            <button class="btn btn-danger btn-sm" onclick="showDeleteProductMenu(event, ${p.id}, ${p.is_active})" style="clip-path:none;" title="Delete options">DEL</button>
                         </div>
                     </td>
                 </tr>`;
@@ -808,7 +828,10 @@
 
         function filterProducts() {
             const q = document.getElementById('product-search').value.toLowerCase();
-            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q));
+            let filtered = allProducts;
+            if (productFilter === 'active') filtered = filtered.filter(p => p.is_active);
+            else if (productFilter === 'inactive') filtered = filtered.filter(p => !p.is_active);
+            filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q));
             renderProducts(filtered);
         }
 
@@ -866,6 +889,33 @@
                 (o.user_email || '').toLowerCase().includes(q)
             );
             renderOrders(filtered);
+        }
+
+        function exportOrdersCSV() {
+            if (!allOrders.length) { showToast('No orders to export', 'error'); return; }
+            const headers = ['Order Number','Customer','Email','Status','Total','Items','Shipping Address','City','ZIP','Country','Tracking','Date'];
+            const rows = allOrders.map(o => [
+                o.order_number,
+                `${o.user_first_name || ''} ${o.user_last_name || ''}`.trim(),
+                o.user_email || '',
+                o.status,
+                parseFloat(o.total).toFixed(2),
+                (o.items || []).filter(i=>i.id).map(i => `${i.product_name} x${i.quantity}`).join('; '),
+                `${o.shipping_address || ''}`,
+                o.shipping_city || '',
+                o.shipping_zip || '',
+                o.shipping_country || '',
+                o.tracking_number || '',
+                new Date(o.created_at).toLocaleDateString()
+            ]);
+            const csvContent = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `orders-export-${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showToast('Orders exported!', 'success');
         }
 
         async function loadUsers() {
@@ -1065,11 +1115,84 @@
             else { const data = await res.json(); showToast(data.error || 'Failed', 'error'); }
         });
 
-        async function deleteProduct(id) {
-            if (!confirm('Deactivate this product?')) return;
+        let productFilter = 'all';
+
+        function setProductFilter(filter) {
+            productFilter = filter;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.toggle('active', t.dataset.filter === filter));
+            filterProducts();
+        }
+
+        async function deactivateProduct(id) {
+            if (!confirm('Deactivate this product? It will be hidden from the store but can be reactivated.')) return;
             const res = await fetch(`/api/admin/products/${id}`, { method: 'DELETE' });
             if (res.ok) { showToast('Product deactivated', 'success'); loadProducts(); loadStats(); }
             else showToast('Failed', 'error');
+        }
+
+        async function permanentDeleteProduct(id) {
+            if (!confirm('PERMANENTLY DELETE this product? This cannot be undone. Products with existing orders cannot be deleted.')) return;
+            const res = await fetch(`/api/admin/products/${id}/permanent`, { method: 'DELETE' });
+            const data = await res.json();
+            if (res.ok) { showToast('Product permanently deleted', 'success'); loadProducts(); loadStats(); }
+            else showToast(data.error || 'Failed to delete', 'error');
+        }
+
+        async function reactivateProduct(id) {
+            const res = await fetch(`/api/admin/products/${id}/reactivate`, { method: 'PATCH' });
+            if (res.ok) { showToast('Product reactivated!', 'success'); loadProducts(); loadStats(); }
+            else showToast('Failed', 'error');
+        }
+
+        async function duplicateProduct(id) {
+            if (!confirm('Duplicate this product? A copy will be created as inactive with 0 stock.')) return;
+            const res = await fetch(`/api/admin/products/${id}/duplicate`, { method: 'POST' });
+            if (res.ok) { showToast('Product duplicated!', 'success'); loadProducts(); loadStats(); loadCategories(); }
+            else showToast('Failed to duplicate', 'error');
+        }
+
+        function showDeleteProductMenu(event, id, isActive) {
+            event.stopPropagation();
+            const existing = document.getElementById('product-delete-menu');
+            if (existing) existing.remove();
+            const menu = document.createElement('div');
+            menu.id = 'product-delete-menu';
+            menu.style.cssText = 'position:fixed;z-index:9999;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px;box-shadow:0 8px 32px rgba(0,0,0,0.4);min-width:180px;';
+            const rect = event.target.getBoundingClientRect();
+            menu.style.top = (rect.bottom + 4) + 'px';
+            menu.style.left = (rect.left) + 'px';
+            const btnStyle = 'display:block;width:100%;text-align:left;padding:10px 14px;border:none;background:none;color:var(--text);font-family:var(--font-mono);font-size:11px;letter-spacing:0.05em;cursor:pointer;border-radius:4px;';
+            if (isActive) {
+                menu.innerHTML = `<button style="${btnStyle}" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='none'" onclick="deactivateProduct(${id}); this.parentElement.remove();">DEACTIVATE</button>`;
+            } else {
+                menu.innerHTML = `
+                    <button style="${btnStyle}" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='none'" onclick="reactivateProduct(${id}); this.parentElement.remove();">REACTIVATE</button>
+                    <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+                    <button style="${btnStyle}color:var(--red);" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='none'" onclick="permanentDeleteProduct(${id}); this.parentElement.remove();">DELETE PERMANENTLY</button>
+                `;
+            }
+            document.body.appendChild(menu);
+            setTimeout(() => document.addEventListener('click', function handler() { menu.remove(); document.removeEventListener('click', handler); }), 10);
+        }
+
+        function quickStockEdit(id, currentStock, cell) {
+            if (cell.querySelector('input')) return;
+            const original = cell.innerHTML;
+            cell.innerHTML = `<input type="number" min="0" value="${currentStock}" style="width:60px;padding:4px 6px;background:var(--input-bg);border:1px solid var(--red);color:var(--text);font-family:var(--font-mono);font-size:12px;border-radius:4px;text-align:center;" onblur="saveQuickStock(${id}, this.value, this.parentElement, '${original.replace(/'/g, "\\'")}')" onkeydown="if(event.key==='Enter'){this.blur()}if(event.key==='Escape'){this.parentElement.innerHTML='${original.replace(/'/g, "\\'")}'}">`;
+            cell.querySelector('input').focus();
+            cell.querySelector('input').select();
+        }
+
+        async function saveQuickStock(id, value, cell, original) {
+            const stock = parseInt(value);
+            if (isNaN(stock) || stock < 0) { cell.innerHTML = original; return; }
+            const res = await fetch(`/api/admin/products/${id}/stock`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stock })
+            });
+            if (res.ok) { showToast('Stock updated', 'success'); loadProducts(); }
+            else { cell.innerHTML = original; showToast('Failed to update stock', 'error'); }
         }
 
         async function deleteOrder(id, orderNumber) {

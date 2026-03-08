@@ -111,6 +111,10 @@ api/checkout.js        - Original Netlify function (reference only)
 - `POST /api/admin/upload` - Upload product image (multer, max 10MB, stored in public/uploads/)
 - `GET /api/admin/categories` - Get all categories (DB + defaults: T-Shirts, Hoodies, Hats, etc.)
 - `DELETE /api/admin/orders/:id` - Delete order (restores stock if not already restored)
+- `DELETE /api/admin/products/:id/permanent` - Permanently delete product (blocked if ordered)
+- `POST /api/admin/products/:id/duplicate` - Duplicate product (creates inactive copy with 0 stock)
+- `PATCH /api/admin/products/:id/stock` - Quick stock update
+- `PATCH /api/admin/products/:id/reactivate` - Reactivate inactive product
 - `GET /api/admin/logs` - Get admin activity logs (last 200 entries)
 
 ## Environment Variables (for Vercel/Neon deployment)
