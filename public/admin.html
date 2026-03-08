@@ -614,7 +614,6 @@
                     <div class="user-avatar-sm">${u.first_name[0].toUpperCase()}</div>
                     <div class="user-info">
                         <span class="name">${u.first_name} ${u.last_name}</span>
-                        ${u.phone ? `<span class="email">${u.phone}</span>` : ''}
                     </div>
                 </div></td>
                 <td class="font-mono text-xs">${u.email}</td>
@@ -901,10 +900,6 @@
                         <div class="value">${u.email}</div>
                     </div>
                     <div class="detail-field">
-                        <div class="label">Phone</div>
-                        <div class="value">${u.phone || 'Not provided'}</div>
-                    </div>
-                    <div class="detail-field">
                         <div class="label">User ID</div>
                         <div class="value font-mono">${u.id}</div>
                     </div>
@@ -979,7 +974,6 @@
                         <div><label class="input-label">LAST NAME</label><input type="text" class="input-field" id="edit-last" value="${u.last_name}" required></div>
                     </div>
                     <div class="mb-4"><label class="input-label">EMAIL</label><input type="email" class="input-field" id="edit-email" value="${u.email}" required></div>
-                    <div class="mb-4"><label class="input-label">PHONE</label><input type="text" class="input-field" id="edit-phone" value="${u.phone || ''}"></div>
                     ${u.role !== 'owner' && currentUser.role === 'owner' ? `
                         <div class="mb-4">
                             <label class="input-label">ROLE</label>
@@ -1017,7 +1011,6 @@
                     firstName: document.getElementById('edit-first').value,
                     lastName: document.getElementById('edit-last').value,
                     email: document.getElementById('edit-email').value,
-                    phone: document.getElementById('edit-phone').value,
                 };
                 const roleEl = document.getElementById('edit-role');
                 if (roleEl) payload.role = roleEl.value;
