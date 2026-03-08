@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | DAVID MYALIK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav class="nav-auth">
+        <div class="nav-auth-inner">
+            <a href="/" class="nav-brand">DAVID <span>MYALIK</span></a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Store</a>
+                <a href="/admin" class="nav-link" style="color:var(--primary);">Admin</a>
+                <div class="nav-user">
+                    <div class="nav-avatar" id="user-avatar"></div>
+                    <span id="user-name-display"></span>
+                    <span class="badge badge-admin" style="margin-left:4px;">ADMIN</span>
+                </div>
+                <a href="#" class="nav-link" onclick="logout()" style="color:#ef4444;">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sidebar-layout">
+        <div class="sidebar">
+            <a href="#" class="sidebar-link active" onclick="showSection('overview')">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Overview
+            </a>
+            <a href="#" class="sidebar-link" onclick="showSection('products')">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                Products
+            </a>
+            <a href="#" class="sidebar-link" onclick="showSection('orders')">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                Orders
+            </a>
+            <a href="#" class="sidebar-link" onclick="showSection('users')">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Users
+            </a>
+        </div>
+
+        <div class="main-content">
+            <div id="overview-section">
+                <h2 style="font-size:36px; margin-bottom:8px;">ADMIN <span class="text-red">OVERVIEW</span></h2>
+                <p class="font-mono text-muted text-xs mb-8">Store performance at a glance</p>
+                <div class="grid-4 mb-8" id="stats-grid">
+                    <div class="stat-card"><span class="stat-label">TOTAL REVENUE</span><span class="stat-value text-red" id="stat-revenue">$0</span></div>
+                    <div class="stat-card"><span class="stat-label">TOTAL ORDERS</span><span class="stat-value" id="stat-orders">0</span></div>
+                    <div class="stat-card"><span class="stat-label">TOTAL USERS</span><span class="stat-value" id="stat-users">0</span></div>
+                    <div class="stat-card"><span class="stat-label">ACTIVE PRODUCTS</span><span class="stat-value" id="stat-products">0</span></div>
+                </div>
+                <h3 style="font-size:20px; margin-bottom:16px;">RECENT <span class="text-red">ORDERS</span></h3>
+                <div id="recent-orders"></div>
+            </div>
+
+            <div id="products-section" style="display:none;">
+                <div class="flex-between mb-8">
+                    <div>
+                        <h2 style="font-size:36px; margin-bottom:8px;">MANAGE <span class="text-red">PRODUCTS</span></h2>
+                        <p class="font-mono text-muted text-xs">Add, edit, and manage inventory</p>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="openProductModal()">ADD PRODUCT</button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="products-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="orders-section" style="display:none;">
+                <h2 style="font-size:36px; margin-bottom:8px;">ALL <span class="text-red">ORDERS</span></h2>
+                <p class="font-mono text-muted text-xs mb-8">View and manage customer orders</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="orders-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="users-section" style="display:none;">
+                <h2 style="font-size:36px; margin-bottom:8px;">MANAGE <span class="text-red">USERS</span></h2>
+                <p class="font-mono text-muted text-xs mb-8">View registered users and manage roles</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>User</th><th>Email</th><th>Role</th><th>Orders</th><th>Joined</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="users-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="product-modal">
+        <div class="modal">
+            <div class="flex-between mb-6">
+                <h3 style="font-size:20px;" id="product-modal-title">ADD <span class="text-red">PRODUCT</span></h3>
+                <button onclick="closeProductModal()" style="background:none;border:none;color:white;cursor:pointer;font-size:20px;">✕</button>
+            </div>
+            <form id="product-form">
+                <input type="hidden" id="prod-id">
+                <div class="mb-4"><label class="input-label">NAME</label><input type="text" class="input-field" id="prod-name" required></div>
+                <div class="mb-4"><label class="input-label">DESCRIPTION</label><textarea class="input-field" id="prod-description"></textarea></div>
+                <div class="grid-2 mb-4">
+                    <div><label class="input-label">PRICE ($)</label><input type="number" step="0.01" class="input-field" id="prod-price" required></div>
+                    <div><label class="input-label">STOCK</label><input type="number" class="input-field" id="prod-stock" required></div>
+                </div>
+                <div class="grid-2 mb-4">
+                    <div><label class="input-label">CATEGORY</label><input type="text" class="input-field" id="prod-category" placeholder="e.g., T-Shirts"></div>
+                    <div>
+                        <label class="input-label">STATUS</label>
+                        <select class="input-field" id="prod-active">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-4"><label class="input-label">IMAGE URL</label><input type="url" class="input-field" id="prod-image" placeholder="https://..."></div>
+                <button type="submit" class="btn btn-primary btn-full" id="prod-submit-btn">SAVE PRODUCT</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="order-modal">
+        <div class="modal" style="max-width:700px;">
+            <div class="flex-between mb-6">
+                <h3 style="font-size:20px;">ORDER <span class="text-red">DETAILS</span></h3>
+                <button onclick="closeOrderModal()" style="background:none;border:none;color:white;cursor:pointer;font-size:20px;">✕</button>
+            </div>
+            <div id="order-detail-content"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="user-modal">
+        <div class="modal" style="max-width:700px;">
+            <div class="flex-between mb-6">
+                <h3 style="font-size:20px;">USER <span class="text-red">DETAILS</span></h3>
+                <button onclick="closeUserModal()" style="background:none;border:none;color:white;cursor:pointer;font-size:20px;">✕</button>
+            </div>
+            <div id="user-detail-content"></div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        let currentUser = null;
+        const sections = ['overview', 'products', 'orders', 'users'];
+
+        async function init() {
+            const res = await fetch('/api/auth/me');
+            const data = await res.json();
+            if (!data.user || (data.user.role !== 'admin' && data.user.role !== 'owner')) {
+                window.location.href = '/login';
+                return;
+            }
+            currentUser = data.user;
+            document.getElementById('user-avatar').textContent = currentUser.first_name[0].toUpperCase();
+            document.getElementById('user-name-display').textContent = currentUser.first_name;
+            loadStats();
+            loadOrders();
+            loadProducts();
+            loadUsers();
+        }
+
+        function showSection(name) {
+            sections.forEach(s => {
+                document.getElementById(s + '-section').style.display = s === name ? 'block' : 'none';
+            });
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        async function loadStats() {
+            const res = await fetch('/api/admin/stats');
+            const stats = await res.json();
+            document.getElementById('stat-revenue').textContent = '$' + stats.totalRevenue.toFixed(2);
+            document.getElementById('stat-orders').textContent = stats.totalOrders;
+            document.getElementById('stat-users').textContent = stats.totalUsers;
+            document.getElementById('stat-products').textContent = stats.totalProducts;
+        }
+
+        async function loadProducts() {
+            const res = await fetch('/api/admin/products');
+            const products = await res.json();
+            document.getElementById('products-table').innerHTML = products.map(p => {
+                let stockClass = 'stock-ok';
+                let stockText = p.stock;
+                if (p.stock <= 0) { stockClass = 'stock-out'; stockText = 'OUT OF STOCK'; }
+                else if (p.stock <= 10) { stockClass = 'stock-low'; stockText = `${p.stock} left`; }
+                return `<tr>
+                    <td><div style="display:flex;align-items:center;gap:12px;">
+                        <img src="${p.image_url}" style="width:40px;height:40px;object-fit:cover;filter:grayscale(0.5);">
+                        <span style="font-weight:600;">${p.name}</span>
+                    </div></td>
+                    <td class="font-mono text-xs">${p.category || '-'}</td>
+                    <td class="font-mono">$${parseFloat(p.price).toFixed(2)}</td>
+                    <td class="font-mono ${stockClass}">${stockText}</td>
+                    <td><span class="badge ${p.is_active ? 'badge-active' : 'badge-inactive'}">${p.is_active ? 'Active' : 'Inactive'}</span></td>
+                    <td><button class="btn btn-secondary btn-sm" onclick="editProduct(${p.id})">EDIT</button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function loadOrders() {
+            const res = await fetch('/api/admin/orders');
+            const orders = await res.json();
+            document.getElementById('orders-table').innerHTML = orders.map(o => `<tr>
+                <td class="font-mono text-xs">${o.order_number}</td>
+                <td>${o.user_first_name || ''} ${o.user_last_name || ''}<br><span class="font-mono text-xs text-muted">${o.user_email || ''}</span></td>
+                <td class="font-mono text-xs">${o.items.filter(i=>i.id).length} items</td>
+                <td class="font-mono">$${parseFloat(o.total).toFixed(2)}</td>
+                <td><span class="badge badge-${o.status}">${o.status}</span></td>
+                <td class="font-mono text-xs">${new Date(o.created_at).toLocaleDateString()}</td>
+                <td><button class="btn btn-secondary btn-sm" onclick="viewOrder(${o.id})">VIEW</button></td>
+            </tr>`).join('');
+
+            document.getElementById('recent-orders').innerHTML = orders.slice(0, 5).map(o => `
+                <div class="card mb-4" style="cursor:pointer;" onclick="showSection('orders')">
+                    <div class="flex-between">
+                        <div>
+                            <span class="font-mono text-xs text-muted">${o.order_number}</span>
+                            <p class="text-sm" style="margin-top:4px;">${o.user_first_name || ''} ${o.user_last_name || ''}</p>
+                        </div>
+                        <div style="text-align:right;">
+                            <span class="badge badge-${o.status}">${o.status}</span>
+                            <p class="font-mono text-sm" style="margin-top:4px;">$${parseFloat(o.total).toFixed(2)}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('') || '<div class="empty-state"><p>No orders yet</p></div>';
+        }
+
+        async function loadUsers() {
+            const res = await fetch('/api/admin/users');
+            const users = await res.json();
+            document.getElementById('users-table').innerHTML = users.map(u => `<tr>
+                <td style="font-weight:600;">${u.first_name} ${u.last_name}</td>
+                <td class="font-mono text-xs">${u.email}</td>
+                <td>
+                    <span class="badge badge-${u.role === 'owner' ? 'admin' : u.role}">${u.role}</span>
+                    ${u.role !== 'owner' && currentUser.role === 'owner' ? `
+                        <select onchange="changeRole(${u.id}, this.value)" style="background:transparent;border:1px solid var(--border);color:white;font-size:11px;padding:2px 8px;margin-left:8px;font-family:var(--font-mono);">
+                            <option value="" disabled selected>Change</option>
+                            <option value="customer">Customer</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    ` : ''}
+                </td>
+                <td class="font-mono">${u.order_count}</td>
+                <td class="font-mono text-xs">${new Date(u.created_at).toLocaleDateString()}</td>
+                <td><button class="btn btn-secondary btn-sm" onclick="viewUser(${u.id})">VIEW</button></td>
+            </tr>`).join('');
+        }
+
+        function openProductModal(product = null) {
+            document.getElementById('prod-id').value = '';
+            document.getElementById('product-form').reset();
+            document.getElementById('product-modal-title').innerHTML = 'ADD <span class="text-red">PRODUCT</span>';
+            document.getElementById('product-modal').classList.add('open');
+        }
+        function closeProductModal() { document.getElementById('product-modal').classList.remove('open'); }
+
+        async function editProduct(id) {
+            const res = await fetch(`/api/products/${id}`);
+            const p = await res.json();
+            document.getElementById('prod-id').value = p.id;
+            document.getElementById('prod-name').value = p.name;
+            document.getElementById('prod-description').value = p.description || '';
+            document.getElementById('prod-price').value = p.price;
+            document.getElementById('prod-stock').value = p.stock;
+            document.getElementById('prod-category').value = p.category || '';
+            document.getElementById('prod-active').value = String(p.is_active);
+            document.getElementById('prod-image').value = p.image_url || '';
+            document.getElementById('product-modal-title').innerHTML = 'EDIT <span class="text-red">PRODUCT</span>';
+            document.getElementById('product-modal').classList.add('open');
+        }
+
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('prod-id').value;
+            const payload = {
+                name: document.getElementById('prod-name').value,
+                description: document.getElementById('prod-description').value,
+                price: document.getElementById('prod-price').value,
+                stock: document.getElementById('prod-stock').value,
+                category: document.getElementById('prod-category').value,
+                isActive: document.getElementById('prod-active').value === 'true',
+                imageUrl: document.getElementById('prod-image').value
+            };
+            const url = id ? `/api/admin/products/${id}` : '/api/admin/products';
+            const method = id ? 'PUT' : 'POST';
+            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (res.ok) { showToast(id ? 'Product updated!' : 'Product created!', 'success'); closeProductModal(); loadProducts(); loadStats(); }
+            else { const data = await res.json(); showToast(data.error || 'Failed', 'error'); }
+        });
+
+        async function viewOrder(id) {
+            const res = await fetch('/api/admin/orders');
+            const orders = await res.json();
+            const o = orders.find(ord => ord.id === id);
+            if (!o) return;
+            document.getElementById('order-detail-content').innerHTML = `
+                <div class="grid-2 mb-4">
+                    <div class="stat-card"><span class="stat-label">ORDER</span><span class="font-mono text-sm">${o.order_number}</span></div>
+                    <div class="stat-card"><span class="stat-label">TOTAL</span><span class="font-display" style="font-size:24px;color:var(--primary);">$${parseFloat(o.total).toFixed(2)}</span></div>
+                </div>
+                <div class="card mb-4">
+                    <span class="font-mono text-xs text-muted">CUSTOMER</span>
+                    <p style="margin-top:6px;">${o.user_first_name || ''} ${o.user_last_name || ''}</p>
+                    <p class="font-mono text-xs text-muted">${o.user_email || ''}</p>
+                </div>
+                <div class="card mb-4">
+                    <span class="font-mono text-xs text-muted">SHIPPING ADDRESS</span>
+                    <p style="margin-top:6px;">${o.shipping_first_name || ''} ${o.shipping_last_name || ''}</p>
+                    <p class="text-muted text-sm">${o.shipping_address || ''}, ${o.shipping_city || ''} ${o.shipping_zip || ''}, ${o.shipping_country || ''}</p>
+                </div>
+                <div class="card mb-4">
+                    <span class="font-mono text-xs text-muted">ITEMS</span>
+                    ${o.items.filter(i=>i.id).map(i => `
+                        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+                            <img src="${i.product_image}" style="width:40px;height:40px;object-fit:cover;filter:grayscale(.5);">
+                            <div style="flex:1;"><p class="text-sm">${i.product_name}</p></div>
+                            <span class="font-mono text-xs">x${i.quantity}</span>
+                            <span class="font-mono text-sm">$${(parseFloat(i.price_at_purchase)*i.quantity).toFixed(2)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="card mb-4">
+                    <span class="font-mono text-xs text-muted">UPDATE STATUS</span>
+                    <div style="display:flex;gap:12px;margin-top:12px;align-items:center;">
+                        <select class="input-field" id="order-status-select" style="max-width:200px;">
+                            <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
+                            <option value="processing" ${o.status==='processing'?'selected':''}>Processing</option>
+                            <option value="shipped" ${o.status==='shipped'?'selected':''}>Shipped</option>
+                            <option value="delivered" ${o.status==='delivered'?'selected':''}>Delivered</option>
+                            <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option>
+                        </select>
+                        <input type="text" class="input-field" id="order-tracking" placeholder="Tracking Number" value="${o.tracking_number||''}" style="max-width:250px;">
+                        <button class="btn btn-primary btn-sm" onclick="updateOrderStatus(${o.id})">UPDATE</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('order-modal').classList.add('open');
+        }
+        function closeOrderModal() { document.getElementById('order-modal').classList.remove('open'); }
+
+        async function updateOrderStatus(id) {
+            const status = document.getElementById('order-status-select').value;
+            const trackingNumber = document.getElementById('order-tracking').value;
+            const res = await fetch(`/api/admin/orders/${id}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status, trackingNumber })
+            });
+            if (res.ok) { showToast('Order updated!', 'success'); closeOrderModal(); loadOrders(); loadStats(); }
+            else showToast('Failed to update', 'error');
+        }
+
+        async function changeRole(userId, role) {
+            if (!role) return;
+            const res = await fetch(`/api/admin/users/${userId}/role`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role })
+            });
+            const data = await res.json();
+            if (res.ok) { showToast('Role updated!', 'success'); loadUsers(); }
+            else showToast(data.error || 'Failed', 'error');
+        }
+
+        async function viewUser(id) {
+            const res = await fetch(`/api/admin/users/${id}`);
+            const data = await res.json();
+            const u = data.user;
+            document.getElementById('user-detail-content').innerHTML = `
+                <div class="card mb-4">
+                    <div class="flex-between">
+                        <div>
+                            <h3 style="font-size:20px;">${u.first_name} ${u.last_name}</h3>
+                            <p class="font-mono text-xs text-muted">${u.email}</p>
+                            ${u.phone ? `<p class="font-mono text-xs text-muted">Phone: ${u.phone}</p>` : ''}
+                        </div>
+                        <div style="text-align:right;">
+                            <span class="badge badge-${u.role === 'owner' ? 'admin' : u.role}">${u.role}</span>
+                            <p class="font-mono text-xs text-muted" style="margin-top:8px;">Joined ${new Date(u.created_at).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                </div>
+                ${data.addresses.length ? `
+                    <h4 class="font-display mb-4" style="font-size:16px;">ADDRESSES</h4>
+                    ${data.addresses.map(a => `<div class="card mb-4">
+                        <p>${a.first_name} ${a.last_name}</p>
+                        <p class="text-muted text-sm">${a.address_line1}${a.address_line2?', '+a.address_line2:''}</p>
+                        <p class="text-muted text-sm">${a.city}${a.state?', '+a.state:''} ${a.zip}, ${a.country}</p>
+                    </div>`).join('')}
+                ` : ''}
+                ${data.orders.length ? `
+                    <h4 class="font-display mb-4" style="font-size:16px;">ORDER HISTORY</h4>
+                    ${data.orders.map(o => `<div class="card mb-4">
+                        <div class="flex-between">
+                            <div>
+                                <span class="font-mono text-xs text-muted">${o.order_number}</span>
+                                <p class="font-mono text-sm" style="margin-top:4px;">$${parseFloat(o.total).toFixed(2)}</p>
+                            </div>
+                            <span class="badge badge-${o.status}">${o.status}</span>
+                        </div>
+                    </div>`).join('')}
+                ` : '<p class="font-mono text-xs text-muted">No orders yet</p>'}
+            `;
+            document.getElementById('user-modal').classList.add('open');
+        }
+        function closeUserModal() { document.getElementById('user-modal').classList.remove('open'); }
+
+        async function logout() {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.href = '/';
+        }
+
+        function showToast(msg, type) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        init();
+    </script>
+</body>
+</html>
