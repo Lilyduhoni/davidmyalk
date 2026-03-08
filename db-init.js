@@ -54,9 +54,9 @@ async function initDatabase() {
         order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
         product_id INTEGER REFERENCES products(id),
         product_name VARCHAR(255) NOT NULL,
-        product_price NUMERIC(10,2) NOT NULL,
+        product_image TEXT,
         quantity INTEGER NOT NULL DEFAULT 1,
-        image_url TEXT
+        price_at_purchase NUMERIC(10,2) NOT NULL
       );
 
       CREATE TABLE IF NOT EXISTS addresses (
@@ -91,6 +91,17 @@ async function initDatabase() {
 
       CREATE INDEX IF NOT EXISTS idx_session_expire ON session(expire);
     `);
+
+    const colCheck = await client.query(`
+      SELECT column_name FROM information_schema.columns
+      WHERE table_name = 'order_items' AND column_name = 'product_price'
+    `);
+    if (colCheck.rows.length > 0) {
+      await client.query(`ALTER TABLE order_items RENAME COLUMN product_price TO price_at_purchase`);
+      await client.query(`ALTER TABLE order_items RENAME COLUMN image_url TO product_image`);
+      console.log('Migrated order_items columns');
+    }
+
     console.log('Database tables initialized');
   } catch (err) {
     console.error('Database initialization error:', err.message);
