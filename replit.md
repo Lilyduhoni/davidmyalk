@@ -36,6 +36,7 @@ api/checkout.js        - Original Netlify function (reference only)
 - `addresses` - Saved shipping addresses
 - `password_reset_tokens` - Password reset tokens
 - `admin_logs` - Admin activity log (user_id, user_name, action, details, created_at)
+- `site_settings` - Key-value store for all configurable settings (shipping, branding, SEO, socials, etc.)
 - `session` - Express session store
 
 ## Key Features
@@ -84,6 +85,8 @@ api/checkout.js        - Original Netlify function (reference only)
 - `POST /api/checkout/complete` - Verify Stripe payment and create order (called on return from Stripe)
 
 ### Settings
+- `GET /api/settings/all` - Get all site settings (public, key-value)
+- `PUT /api/admin/settings/bulk` - Update multiple settings at once (admin only, whitelisted keys)
 - `GET /api/settings/shipping` - Get current shipping cost (public)
 - `PUT /api/admin/settings/shipping` - Update shipping cost (admin only)
 - `GET /api/settings/grind` - Get grind section content (public)

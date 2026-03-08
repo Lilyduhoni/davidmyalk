@@ -76,6 +76,7 @@
             const user = await checkAuth();
             renderNav(user);
             renderFooter();
+            renderAnnouncementBar();
         })();
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {

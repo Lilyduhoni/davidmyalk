@@ -377,14 +377,14 @@
 
     <section id="home" class="hero-section">
         <div class="hero-overlay"></div>
-        <img src="https://images.unsplash.com/photo-1621213327685-6d09e99c1040?q=80&w=2070&auto=format&fit=crop" class="hero-bg-img" alt="">
+        <img src="https://images.unsplash.com/photo-1621213327685-6d09e99c1040?q=80&w=2070&auto=format&fit=crop" class="hero-bg-img" alt="" id="hero-bg-img">
         <div class="hero-content">
             <h1 class="hero-title reveal glitch-wrapper">
-                <span class="glitch-text" data-text="MYALIK">MYALIK</span>
+                <span class="glitch-text" data-text="MYALIK" id="hero-title-text">MYALIK</span>
             </h1>
-            <p class="font-mono reveal hero-sub" style="animation:pulse 3s ease-in-out infinite alternate;">SIDEWAYS ALWAYS &bull; EST. 2026</p>
+            <p class="font-mono reveal hero-sub" style="animation:pulse 3s ease-in-out infinite alternate;" id="hero-subtitle-text">SIDEWAYS ALWAYS &bull; EST. 2026</p>
             <div class="reveal" style="margin-top:48px;">
-                <a href="#shop" class="btn btn-primary" style="font-size:22px;padding:18px 48px;box-shadow:0 0 40px rgba(255,0,0,0.3);">SHOP THE DROP</a>
+                <a href="#shop" class="btn btn-primary" style="font-size:22px;padding:18px 48px;box-shadow:0 0 40px rgba(255,0,0,0.3);" id="hero-cta-btn">SHOP THE DROP</a>
             </div>
             <div class="reveal" style="margin-top:64px;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" style="animation: bounce 2s ease-in-out infinite;"><polyline points="6 9 12 15 18 9"/></svg>
@@ -526,7 +526,7 @@
         <div class="contact-inner reveal">
             <h2 class="contact-title">GET IN <span class="text-red">TOUCH</span></h2>
             <p class="font-mono text-muted" style="font-size:12px;margin-bottom:40px;letter-spacing:0.1em;">Questions, collabs, or just wanna talk cars?</p>
-            <a href="mailto:contact@davidmyalik.com" class="btn btn-secondary" style="padding:14px 40px;">CONTACT US</a>
+            <a href="mailto:contact@davidmyalik.com" class="btn btn-secondary" style="padding:14px 40px;" id="contact-email-btn">CONTACT US</a>
         </div>
     </section>
 
@@ -570,15 +570,29 @@
 
             renderNav(currentUser, { isStore: true });
             renderFooter();
+            renderAnnouncementBar();
             document.getElementById('cart-btn').addEventListener('click', toggleCart);
 
             try {
-                const [shipRes, grindRes] = await Promise.all([
+                const [shipRes, grindRes, allSettingsRes] = await Promise.all([
                     fetch('/api/settings/shipping'),
-                    fetch('/api/settings/grind')
+                    fetch('/api/settings/grind'),
+                    fetch('/api/settings/all')
                 ]);
                 const shipData = await shipRes.json();
                 SHIPPING_COST = shipData.shippingCost;
+                const siteSettings = await allSettingsRes.json();
+                if (siteSettings.hero_title) { const el = document.getElementById('hero-title-text'); el.textContent = siteSettings.hero_title; el.dataset.text = siteSettings.hero_title; }
+                if (siteSettings.hero_subtitle) document.getElementById('hero-subtitle-text').textContent = siteSettings.hero_subtitle;
+                if (siteSettings.hero_cta_text) document.getElementById('hero-cta-btn').textContent = siteSettings.hero_cta_text;
+                if (siteSettings.hero_bg_image) document.getElementById('hero-bg-img').src = siteSettings.hero_bg_image;
+                if (siteSettings.contact_email) document.getElementById('contact-email-btn').href = 'mailto:' + siteSettings.contact_email;
+                if (siteSettings.meta_title) document.title = siteSettings.meta_title;
+                if (siteSettings.meta_description) { let m = document.querySelector('meta[name="description"]'); if (m) m.content = siteSettings.meta_description; }
+                if (siteSettings.meta_keywords) { let m = document.querySelector('meta[name="keywords"]'); if (m) m.content = siteSettings.meta_keywords; }
+                if (siteSettings.og_image) { document.querySelectorAll('meta[property="og:image"],meta[name="twitter:image"]').forEach(m => m.content = siteSettings.og_image); }
+                if (siteSettings.free_shipping_threshold && parseFloat(siteSettings.free_shipping_threshold) > 0) { window.FREE_SHIPPING_THRESHOLD = parseFloat(siteSettings.free_shipping_threshold); }
+                if (siteSettings.low_stock_threshold) { window.LOW_STOCK_THRESHOLD = parseInt(siteSettings.low_stock_threshold) || 10; }
                 const grindData = await grindRes.json();
                 const titleParts = grindData.title.split('|');
                 if (titleParts.length === 2) {
@@ -742,9 +756,10 @@
 
             grid.innerHTML = filtered.map(p => {
                 let stockHTML = '';
+                const lowThreshold = window.LOW_STOCK_THRESHOLD || 10;
                 if (p.stock <= 0) {
                     stockHTML = '<span class="stock-badge out">SOLD OUT</span>';
-                } else if (p.stock <= 10) {
+                } else if (p.stock <= lowThreshold) {
                     stockHTML = `<span class="stock-badge low">ONLY ${p.stock} LEFT</span>`;
                 }
                 const isOutOfStock = p.stock <= 0;
@@ -902,8 +917,11 @@
             }
             if (step === 2) {
                 const subtotal = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
-                const total = subtotal + SHIPPING_COST;
+                const freeThreshold = window.FREE_SHIPPING_THRESHOLD || 0;
+                const effectiveShipping = (freeThreshold > 0 && subtotal >= freeThreshold) ? 0 : SHIPPING_COST;
+                const total = subtotal + effectiveShipping;
                 document.getElementById('checkout-total').textContent = `$${total.toFixed(2)}`;
+                const shippingLabel = effectiveShipping === 0 ? '<span style="color:#22c55e;">FREE</span>' : `$${effectiveShipping.toFixed(2)}`;
                 document.getElementById('checkout-summary').innerHTML = `
                     <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);padding:16px;margin-bottom:16px;">
                         <span class="font-mono text-xs text-muted">SHIPPING TO</span>
@@ -919,8 +937,9 @@
                         </div>
                     `).join('')}
                     <div style="padding-top:12px;display:flex;justify-content:space-between;" class="font-mono text-xs text-muted">
-                        <span>Shipping</span><span>$${SHIPPING_COST.toFixed(2)}</span>
+                        <span>Shipping</span><span>${shippingLabel}</span>
                     </div>
+                    ${freeThreshold > 0 && subtotal < freeThreshold ? `<div class="font-mono text-xs" style="color:#f59e0b;margin-top:8px;text-align:center;">Add $${(freeThreshold - subtotal).toFixed(2)} more for free shipping!</div>` : ''}
                 `;
             }
         }

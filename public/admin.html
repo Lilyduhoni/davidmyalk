@@ -21,6 +21,22 @@
         .filter-tab.active { background: var(--red); border-color: var(--red); color: #fff; }
         .badge-active { background: rgba(34,197,94,0.15); color: #22c55e; }
         .badge-inactive { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .settings-tabs {
+            display: flex; gap: 0; margin-bottom: 28px; border-bottom: 1px solid var(--border);
+            overflow-x: auto; -webkit-overflow-scrolling: touch;
+        }
+        .settings-tab {
+            padding: 12px 20px; border: none; background: none; color: var(--text-muted);
+            font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; cursor: pointer;
+            text-transform: uppercase; white-space: nowrap; border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .settings-tab:hover { color: var(--text); background: rgba(255,255,255,0.02); }
+        .settings-tab.active { color: var(--red); border-bottom-color: var(--red); }
+        .settings-card-title { font-size: 16px; margin-bottom: 4px; font-family: var(--font-display); }
+        .settings-card-desc { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-bottom: 20px; letter-spacing: 0.03em; }
+        .settings-panel { animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
         .admin-header {
             display: flex; justify-content: space-between; align-items: flex-start;
             margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
@@ -388,61 +404,335 @@
                 <div class="admin-header">
                     <div>
                         <h2 class="admin-title">STORE <span class="text-red">SETTINGS</span></h2>
-                        <p class="admin-subtitle">Configure shipping and store options</p>
+                        <p class="admin-subtitle">Configure your store, branding, and content</p>
                     </div>
                 </div>
-                <div class="card" style="max-width:500px;">
-                    <h3 style="font-size:16px;margin-bottom:16px;font-family:var(--font-display);">SHIPPING <span class="text-red">COST</span></h3>
-                    <p class="text-muted font-mono text-xs" style="margin-bottom:16px;">Flat-rate shipping applied to every order at checkout. Set to 0 for free shipping.</p>
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <span style="font-size:20px;font-weight:700;">$</span>
-                        <input type="number" step="0.01" min="0" class="input-field" id="settings-shipping-cost" style="max-width:150px;font-size:18px;text-align:center;">
-                        <button class="btn btn-primary" onclick="saveShippingCost()">SAVE</button>
-                    </div>
-                    <div id="shipping-save-status" class="font-mono text-xs text-muted" style="margin-top:10px;"></div>
+                <div class="settings-tabs">
+                    <button class="settings-tab active" data-tab="general" onclick="showSettingsTab('general')">General</button>
+                    <button class="settings-tab" data-tab="shipping" onclick="showSettingsTab('shipping')">Shipping & Tax</button>
+                    <button class="settings-tab" data-tab="branding" onclick="showSettingsTab('branding')">Branding</button>
+                    <button class="settings-tab" data-tab="seo" onclick="showSettingsTab('seo')">SEO</button>
+                    <button class="settings-tab" data-tab="content" onclick="showSettingsTab('content')">Content</button>
+                    <button class="settings-tab" data-tab="socials" onclick="showSettingsTab('socials')">Social Links</button>
+                    <button class="settings-tab" data-tab="checkout" onclick="showSettingsTab('checkout')">Checkout</button>
+                    <button class="settings-tab" data-tab="advanced" onclick="showSettingsTab('advanced')">Advanced</button>
                 </div>
 
-                <div class="card" style="max-width:700px;margin-top:24px;">
-                    <h3 style="font-size:16px;margin-bottom:16px;font-family:var(--font-display);">THE GRIND <span class="text-red">SECTION</span></h3>
-                    <p class="text-muted font-mono text-xs" style="margin-bottom:16px;">Edit the "The Grind" section on the homepage. Use a pipe (|) in the title to make the second part red, e.g. "THE |GRIND".</p>
-
-                    <div class="mb-4">
-                        <label class="input-label">SECTION TITLE</label>
-                        <input type="text" class="input-field" id="grind-edit-title" placeholder="THE |GRIND">
-                    </div>
-                    <div class="mb-4">
-                        <label class="input-label">MAIN TEXT</label>
-                        <textarea class="input-field" id="grind-edit-text" style="min-height:100px;" placeholder="The main paragraph text..."></textarea>
-                    </div>
-                    <div class="mb-4">
-                        <label class="input-label">QUOTE</label>
-                        <input type="text" class="input-field" id="grind-edit-quote" placeholder="Every drift starts with a decision...">
-                    </div>
-                    <div class="mb-4">
-                        <label class="input-label">IMAGE URL</label>
-                        <input type="text" class="input-field" id="grind-edit-image" placeholder="https://...">
-                        <div id="grind-image-preview" style="margin-top:10px;"></div>
-                    </div>
-                    <div class="grid-2 mb-4">
-                        <div>
-                            <label class="input-label">LINK URL</label>
-                            <input type="text" class="input-field" id="grind-edit-link-url" placeholder="https://www.youtube.com/...">
+                <!-- GENERAL TAB -->
+                <div class="settings-panel" id="stab-general">
+                    <div class="card" style="max-width:700px;">
+                        <h3 class="settings-card-title">STORE <span class="text-red">INFORMATION</span></h3>
+                        <p class="settings-card-desc">Basic store details shown across your website.</p>
+                        <div class="mb-4">
+                            <label class="input-label">STORE NAME</label>
+                            <input type="text" class="input-field" id="set-store_name" placeholder="DAVID MYALIK">
                         </div>
-                        <div>
-                            <label class="input-label">LINK TEXT</label>
-                            <input type="text" class="input-field" id="grind-edit-link-text" placeholder="Watch on YouTube">
+                        <div class="mb-4">
+                            <label class="input-label">TAGLINE</label>
+                            <input type="text" class="input-field" id="set-store_tagline" placeholder="Sideways Always">
                         </div>
+                        <div class="mb-4">
+                            <label class="input-label">STORE DESCRIPTION</label>
+                            <textarea class="input-field" id="set-store_description" style="min-height:80px;" placeholder="Drift culture apparel for those who live life sideways..."></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">FOOTER TAGLINE</label>
+                            <input type="text" class="input-field" id="set-footer_tagline" placeholder="Drift culture apparel for those who live life sideways. Born from the smoke, built for the streets.">
+                            <span class="font-mono text-xs text-muted">Shown in the footer under the brand name</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['store_name','store_tagline','store_description','footer_tagline'])">SAVE STORE INFO</button>
                     </div>
-                    <button class="btn btn-primary" onclick="saveGrindSection()">SAVE GRIND SECTION</button>
-                    <div id="grind-save-status" class="font-mono text-xs text-muted" style="margin-top:10px;"></div>
+                    <div class="card" style="max-width:700px;margin-top:24px;">
+                        <h3 class="settings-card-title">CONTACT <span class="text-red">DETAILS</span></h3>
+                        <p class="settings-card-desc">Contact information shown on your site and in emails.</p>
+                        <div class="mb-4">
+                            <label class="input-label">CONTACT EMAIL</label>
+                            <input type="email" class="input-field" id="set-contact_email" placeholder="contact@davidmyalik.com">
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">CONTACT PHONE</label>
+                            <input type="text" class="input-field" id="set-contact_phone" placeholder="+1 (555) 123-4567">
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">BUSINESS ADDRESS</label>
+                            <textarea class="input-field" id="set-contact_address" style="min-height:60px;" placeholder="123 Drift Lane, Smoke City, CA 90210"></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">BUSINESS HOURS</label>
+                            <input type="text" class="input-field" id="set-business_hours" placeholder="Mon-Fri 9AM-5PM PST">
+                        </div>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['contact_email','contact_phone','contact_address','business_hours'])">SAVE CONTACT INFO</button>
+                    </div>
                 </div>
 
-                <div class="card" style="max-width:700px;margin-top:24px;">
-                    <h3 style="font-size:16px;margin-bottom:16px;font-family:var(--font-display);">SOCIAL <span class="text-red">LINKS</span></h3>
-                    <p class="text-muted font-mono text-xs" style="margin-bottom:16px;">Manage footer social media icons. Toggle them on/off and set URLs. Enabled links with URLs will appear as icons in the footer.</p>
-                    <div id="socials-editor"></div>
-                    <button class="btn btn-primary" onclick="saveSocials()" style="margin-top:16px;">SAVE SOCIAL LINKS</button>
-                    <div id="socials-save-status" class="font-mono text-xs text-muted" style="margin-top:10px;"></div>
+                <!-- SHIPPING & TAX TAB -->
+                <div class="settings-panel" id="stab-shipping" style="display:none;">
+                    <div class="card" style="max-width:600px;">
+                        <h3 class="settings-card-title">SHIPPING <span class="text-red">COST</span></h3>
+                        <p class="settings-card-desc">Flat-rate shipping applied to every order at checkout. Set to 0 for free shipping.</p>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <span style="font-size:20px;font-weight:700;">$</span>
+                            <input type="number" step="0.01" min="0" class="input-field" id="settings-shipping-cost" style="max-width:150px;font-size:18px;text-align:center;">
+                            <button class="btn btn-primary" onclick="saveShippingCost()">SAVE</button>
+                        </div>
+                        <div id="shipping-save-status" class="font-mono text-xs text-muted" style="margin-top:10px;"></div>
+                    </div>
+                    <div class="card" style="max-width:600px;margin-top:24px;">
+                        <h3 class="settings-card-title">FREE SHIPPING <span class="text-red">THRESHOLD</span></h3>
+                        <p class="settings-card-desc">Orders above this amount get free shipping. Set to 0 to disable.</p>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <span style="font-size:20px;font-weight:700;">$</span>
+                            <input type="number" step="0.01" min="0" class="input-field" id="set-free_shipping_threshold" style="max-width:150px;font-size:18px;text-align:center;" value="0">
+                        </div>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['free_shipping_threshold'])" style="margin-top:12px;">SAVE THRESHOLD</button>
+                    </div>
+                    <div class="card" style="max-width:600px;margin-top:24px;">
+                        <h3 class="settings-card-title">TAX <span class="text-red">SETTINGS</span></h3>
+                        <p class="settings-card-desc">Configure sales tax applied at checkout.</p>
+                        <div class="mb-4">
+                            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                                <input type="checkbox" id="set-tax_enabled" style="accent-color:var(--primary);width:20px;height:20px;">
+                                <span class="font-mono text-xs">ENABLE TAX</span>
+                            </label>
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">TAX RATE (%)</label>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <input type="number" step="0.01" min="0" max="100" class="input-field" id="set-tax_rate" style="max-width:120px;text-align:center;" value="0">
+                                <span class="font-mono text-xs text-muted">%</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['tax_enabled','tax_rate'])">SAVE TAX SETTINGS</button>
+                    </div>
+                    <div class="card" style="max-width:600px;margin-top:24px;">
+                        <h3 class="settings-card-title">ORDER <span class="text-red">SETTINGS</span></h3>
+                        <p class="settings-card-desc">Configure order numbering and minimums.</p>
+                        <div class="grid-2 mb-4">
+                            <div>
+                                <label class="input-label">ORDER NUMBER PREFIX</label>
+                                <input type="text" class="input-field" id="set-order_prefix" placeholder="DM-" maxlength="10">
+                                <span class="font-mono text-xs text-muted">e.g. DM-00001</span>
+                            </div>
+                            <div>
+                                <label class="input-label">MINIMUM ORDER AMOUNT</label>
+                                <div style="display:flex;align-items:center;gap:6px;">
+                                    <span style="font-weight:700;">$</span>
+                                    <input type="number" step="0.01" min="0" class="input-field" id="set-min_order_amount" value="0">
+                                </div>
+                                <span class="font-mono text-xs text-muted">Set to 0 for no minimum</span>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">CURRENCY</label>
+                            <select class="input-field" id="set-currency" style="max-width:200px;">
+                                <option value="USD">USD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                                <option value="GBP">GBP (£)</option>
+                                <option value="CAD">CAD (C$)</option>
+                                <option value="AUD">AUD (A$)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['order_prefix','min_order_amount','currency'])">SAVE ORDER SETTINGS</button>
+                    </div>
+                </div>
+
+                <!-- BRANDING TAB -->
+                <div class="settings-panel" id="stab-branding" style="display:none;">
+                    <div class="card" style="max-width:700px;">
+                        <h3 class="settings-card-title">HERO <span class="text-red">SECTION</span></h3>
+                        <p class="settings-card-desc">Customize the homepage hero banner that visitors see first.</p>
+                        <div class="mb-4">
+                            <label class="input-label">HERO TITLE</label>
+                            <input type="text" class="input-field" id="set-hero_title" placeholder="MYALIK">
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">HERO SUBTITLE</label>
+                            <input type="text" class="input-field" id="set-hero_subtitle" placeholder="SIDEWAYS ALWAYS • EST. 2026">
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">CTA BUTTON TEXT</label>
+                            <input type="text" class="input-field" id="set-hero_cta_text" placeholder="SHOP THE DROP">
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">BACKGROUND IMAGE URL</label>
+                            <input type="text" class="input-field" id="set-hero_bg_image" placeholder="https://images.unsplash.com/..." oninput="updateHeroBgPreview()">
+                            <div id="hero-bg-preview" style="margin-top:10px;"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['hero_title','hero_subtitle','hero_cta_text','hero_bg_image'])">SAVE HERO SECTION</button>
+                    </div>
+                    <div class="card" style="max-width:700px;margin-top:24px;">
+                        <h3 class="settings-card-title">ANNOUNCEMENT <span class="text-red">BAR</span></h3>
+                        <p class="settings-card-desc">Display a site-wide announcement banner at the top of every page.</p>
+                        <div class="mb-4">
+                            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                                <input type="checkbox" id="set-announcement_enabled" style="accent-color:var(--primary);width:20px;height:20px;">
+                                <span class="font-mono text-xs">ENABLE ANNOUNCEMENT BAR</span>
+                            </label>
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">ANNOUNCEMENT TEXT</label>
+                            <input type="text" class="input-field" id="set-announcement_text" placeholder="FREE SHIPPING ON ORDERS OVER $75!" oninput="updateAnnouncementPreview()">
+                        </div>
+                        <div class="grid-2 mb-4">
+                            <div>
+                                <label class="input-label">BACKGROUND COLOR</label>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <input type="color" id="set-announcement_bg" value="#e50000" style="width:40px;height:36px;border:1px solid var(--border);cursor:pointer;background:none;" oninput="document.getElementById('set-announcement_bg_text').value=this.value;updateAnnouncementPreview()">
+                                    <input type="text" class="input-field" id="set-announcement_bg_text" value="#e50000" style="max-width:120px;font-size:12px;" oninput="document.getElementById('set-announcement_bg').value=this.value;updateAnnouncementPreview()">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="input-label">TEXT COLOR</label>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <input type="color" id="set-announcement_text_color" value="#ffffff" style="width:40px;height:36px;border:1px solid var(--border);cursor:pointer;background:none;" oninput="document.getElementById('set-announcement_text_color_text').value=this.value;updateAnnouncementPreview()">
+                                    <input type="text" class="input-field" id="set-announcement_text_color_text" value="#ffffff" style="max-width:120px;font-size:12px;" oninput="document.getElementById('set-announcement_text_color').value=this.value;updateAnnouncementPreview()">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="announcement-preview" style="margin-bottom:16px;"></div>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['announcement_enabled','announcement_text','announcement_bg','announcement_text_color'])">SAVE ANNOUNCEMENT</button>
+                    </div>
+                </div>
+
+                <!-- SEO TAB -->
+                <div class="settings-panel" id="stab-seo" style="display:none;">
+                    <div class="card" style="max-width:700px;">
+                        <h3 class="settings-card-title">SEO & <span class="text-red">META TAGS</span></h3>
+                        <p class="settings-card-desc">Control how your store appears in search engines and social media shares.</p>
+                        <div class="mb-4">
+                            <label class="input-label">PAGE TITLE</label>
+                            <input type="text" class="input-field" id="set-meta_title" placeholder="DAVID MYALIK | Sideways Always - Drift Culture Merch & Apparel">
+                            <span class="font-mono text-xs text-muted">Shown in browser tabs and search results</span>
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">META DESCRIPTION</label>
+                            <textarea class="input-field" id="set-meta_description" style="min-height:80px;" placeholder="Official merch store for David Myalik. Drift culture apparel..."></textarea>
+                            <span class="font-mono text-xs text-muted">Shown below the title in search results (150-160 chars recommended)</span>
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">META KEYWORDS</label>
+                            <input type="text" class="input-field" id="set-meta_keywords" placeholder="drift merch, drift culture, car culture, streetwear...">
+                            <span class="font-mono text-xs text-muted">Comma-separated keywords for search engines</span>
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">OG / SOCIAL SHARE IMAGE URL</label>
+                            <input type="text" class="input-field" id="set-og_image" placeholder="https://yourdomain.com/images/og-image.png" oninput="updateOgImagePreview()">
+                            <span class="font-mono text-xs text-muted">Image shown when sharing links on social media (1200x630 recommended)</span>
+                            <div id="og-image-preview" style="margin-top:10px;"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['meta_title','meta_description','meta_keywords','og_image'])">SAVE SEO SETTINGS</button>
+                    </div>
+                </div>
+
+                <!-- CONTENT TAB -->
+                <div class="settings-panel" id="stab-content" style="display:none;">
+                    <div class="card" style="max-width:700px;">
+                        <h3 class="settings-card-title">THE GRIND <span class="text-red">SECTION</span></h3>
+                        <p class="settings-card-desc">Edit the "The Grind" section on the homepage. Use a pipe (|) in the title to make the second part red, e.g. "THE |GRIND".</p>
+                        <div class="mb-4">
+                            <label class="input-label">SECTION TITLE</label>
+                            <input type="text" class="input-field" id="grind-edit-title" placeholder="THE |GRIND">
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">MAIN TEXT</label>
+                            <textarea class="input-field" id="grind-edit-text" style="min-height:100px;" placeholder="The main paragraph text..."></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">QUOTE</label>
+                            <input type="text" class="input-field" id="grind-edit-quote" placeholder="Every drift starts with a decision...">
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">IMAGE URL</label>
+                            <input type="text" class="input-field" id="grind-edit-image" placeholder="https://...">
+                            <div id="grind-image-preview" style="margin-top:10px;"></div>
+                        </div>
+                        <div class="grid-2 mb-4">
+                            <div>
+                                <label class="input-label">LINK URL</label>
+                                <input type="text" class="input-field" id="grind-edit-link-url" placeholder="https://www.youtube.com/...">
+                            </div>
+                            <div>
+                                <label class="input-label">LINK TEXT</label>
+                                <input type="text" class="input-field" id="grind-edit-link-text" placeholder="Watch on YouTube">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveGrindSection()">SAVE GRIND SECTION</button>
+                        <div id="grind-save-status" class="font-mono text-xs text-muted" style="margin-top:10px;"></div>
+                    </div>
+                </div>
+
+                <!-- SOCIAL LINKS TAB -->
+                <div class="settings-panel" id="stab-socials" style="display:none;">
+                    <div class="card" style="max-width:700px;">
+                        <h3 class="settings-card-title">SOCIAL <span class="text-red">LINKS</span></h3>
+                        <p class="settings-card-desc">Manage footer social media icons. Toggle them on/off and set URLs. Enabled links with URLs will appear as icons in the footer.</p>
+                        <div id="socials-editor"></div>
+                        <button class="btn btn-primary" onclick="saveSocials()" style="margin-top:16px;">SAVE SOCIAL LINKS</button>
+                        <div id="socials-save-status" class="font-mono text-xs text-muted" style="margin-top:10px;"></div>
+                    </div>
+                </div>
+
+                <!-- CHECKOUT TAB -->
+                <div class="settings-panel" id="stab-checkout" style="display:none;">
+                    <div class="card" style="max-width:700px;">
+                        <h3 class="settings-card-title">CHECKOUT <span class="text-red">OPTIONS</span></h3>
+                        <p class="settings-card-desc">Configure checkout behavior and policies.</p>
+                        <div class="mb-4">
+                            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                                <input type="checkbox" id="set-guest_checkout_enabled" style="accent-color:var(--primary);width:20px;height:20px;">
+                                <span class="font-mono text-xs">ALLOW GUEST CHECKOUT</span>
+                            </label>
+                            <span class="font-mono text-xs text-muted" style="margin-left:30px;">Let customers check out without creating an account</span>
+                        </div>
+                        <div class="mb-4">
+                            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                                <input type="checkbox" id="set-checkout_terms_enabled" style="accent-color:var(--primary);width:20px;height:20px;">
+                                <span class="font-mono text-xs">REQUIRE TERMS AGREEMENT</span>
+                            </label>
+                            <span class="font-mono text-xs text-muted" style="margin-left:30px;">Customers must agree to terms before checkout</span>
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">TERMS / POLICY TEXT</label>
+                            <textarea class="input-field" id="set-checkout_terms_text" style="min-height:80px;" placeholder="By placing your order, you agree to our Terms of Service and Return Policy..."></textarea>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['guest_checkout_enabled','checkout_terms_enabled','checkout_terms_text'])">SAVE CHECKOUT SETTINGS</button>
+                    </div>
+                </div>
+
+                <!-- ADVANCED TAB -->
+                <div class="settings-panel" id="stab-advanced" style="display:none;">
+                    <div class="card" style="max-width:700px;">
+                        <h3 class="settings-card-title">INVENTORY <span class="text-red">SETTINGS</span></h3>
+                        <p class="settings-card-desc">Configure how inventory is managed and displayed.</p>
+                        <div class="mb-4">
+                            <label class="input-label">LOW STOCK THRESHOLD</label>
+                            <input type="number" min="1" class="input-field" id="set-low_stock_threshold" style="max-width:120px;" value="10">
+                            <span class="font-mono text-xs text-muted">Products at or below this stock level show "Only X left" on the storefront</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['low_stock_threshold'])">SAVE INVENTORY SETTINGS</button>
+                    </div>
+                    <div class="card" style="max-width:700px;margin-top:24px;">
+                        <h3 class="settings-card-title">MAINTENANCE <span class="text-red">MODE</span></h3>
+                        <p class="settings-card-desc">Temporarily disable your store for customers. Admins can still access the site.</p>
+                        <div class="mb-4">
+                            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                                <input type="checkbox" id="set-maintenance_mode" style="accent-color:var(--primary);width:20px;height:20px;">
+                                <span class="font-mono text-xs" style="color:var(--red);font-weight:600;">ENABLE MAINTENANCE MODE</span>
+                            </label>
+                        </div>
+                        <div class="mb-4">
+                            <label class="input-label">MAINTENANCE MESSAGE</label>
+                            <textarea class="input-field" id="set-maintenance_message" style="min-height:80px;" placeholder="We're tuning the engine. The store will be back shortly..."></textarea>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['maintenance_mode','maintenance_message'])">SAVE MAINTENANCE SETTINGS</button>
+                    </div>
+                    <div class="card" style="max-width:700px;margin-top:24px;border-color:rgba(239,68,68,0.3);">
+                        <h3 class="settings-card-title" style="color:var(--red);">DANGER <span style="color:var(--text);">ZONE</span></h3>
+                        <p class="settings-card-desc">Destructive actions that cannot be undone.</p>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                            <button class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.3);" onclick="resetAllSettings()">RESET ALL SETTINGS</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -577,7 +867,8 @@
             delete_product: { label: 'Deleted Product', color: '#ef4444', icon: 'x' },
             duplicate_product: { label: 'Duplicated Product', color: '#22c55e', icon: '+' },
             update_stock: { label: 'Updated Stock', color: '#f59e0b', icon: '#' },
-            reactivate_product: { label: 'Reactivated Product', color: '#22c55e', icon: '+' }
+            reactivate_product: { label: 'Reactivated Product', color: '#22c55e', icon: '+' },
+            update_settings: { label: 'Updated Settings', color: '#06b6d4', icon: '~' }
         };
 
         async function loadLogs() {
@@ -624,13 +915,17 @@
             renderLogs(filtered);
         }
 
+        let allSiteSettings = {};
+
         async function loadSettings() {
             try {
-                const [shipRes, grindRes, socialsRes] = await Promise.all([
+                const [allRes, shipRes, grindRes, socialsRes] = await Promise.all([
+                    fetch('/api/settings/all'),
                     fetch('/api/settings/shipping'),
                     fetch('/api/settings/grind'),
                     fetch('/api/settings/socials')
                 ]);
+                allSiteSettings = await allRes.json();
                 const shipData = await shipRes.json();
                 document.getElementById('settings-shipping-cost').value = shipData.shippingCost.toFixed(2);
                 const grindData = await grindRes.json();
@@ -645,7 +940,115 @@
                 }
                 currentSocials = await socialsRes.json();
                 renderSocialsEditor();
+                populateBulkSettings();
             } catch(e) {}
+        }
+
+        function populateBulkSettings() {
+            const textFields = ['store_name','store_tagline','store_description','footer_tagline','contact_email','contact_phone','contact_address','business_hours','currency','order_prefix','min_order_amount','free_shipping_threshold','tax_rate','hero_title','hero_subtitle','hero_cta_text','hero_bg_image','meta_title','meta_description','meta_keywords','og_image','announcement_text','announcement_bg','announcement_text_color','checkout_terms_text','maintenance_message','low_stock_threshold'];
+            const checkFields = ['tax_enabled','announcement_enabled','checkout_terms_enabled','guest_checkout_enabled','maintenance_mode'];
+            for (const key of textFields) {
+                const el = document.getElementById('set-' + key);
+                if (el && allSiteSettings[key] !== undefined) {
+                    el.value = allSiteSettings[key];
+                }
+            }
+            for (const key of checkFields) {
+                const el = document.getElementById('set-' + key);
+                if (el) {
+                    el.checked = allSiteSettings[key] === 'true' || allSiteSettings[key] === true;
+                }
+            }
+            const bgText = document.getElementById('set-announcement_bg_text');
+            if (bgText && allSiteSettings.announcement_bg) bgText.value = allSiteSettings.announcement_bg;
+            const tcText = document.getElementById('set-announcement_text_color_text');
+            if (tcText && allSiteSettings.announcement_text_color) tcText.value = allSiteSettings.announcement_text_color;
+            updateAnnouncementPreview();
+            updateHeroBgPreview();
+            updateOgImagePreview();
+        }
+
+        function showSettingsTab(tab) {
+            document.querySelectorAll('.settings-panel').forEach(p => p.style.display = 'none');
+            document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+            const panel = document.getElementById('stab-' + tab);
+            if (panel) panel.style.display = 'block';
+            const tabBtn = document.querySelector(`.settings-tab[data-tab="${tab}"]`);
+            if (tabBtn) tabBtn.classList.add('active');
+        }
+
+        async function saveBulkSettings(keys) {
+            const settings = {};
+            const checkFields = ['tax_enabled','announcement_enabled','checkout_terms_enabled','guest_checkout_enabled','maintenance_mode'];
+            for (const key of keys) {
+                const el = document.getElementById('set-' + key);
+                if (!el) continue;
+                if (checkFields.includes(key)) {
+                    settings[key] = el.checked ? 'true' : 'false';
+                } else {
+                    settings[key] = el.value;
+                }
+            }
+            try {
+                const res = await fetch('/api/admin/settings/bulk', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ settings })
+                });
+                if (res.ok) {
+                    showToast('Settings saved!', 'success');
+                    Object.assign(allSiteSettings, settings);
+                } else {
+                    const data = await res.json();
+                    showToast(data.error || 'Failed to save', 'error');
+                }
+            } catch (err) {
+                showToast('Failed to save settings', 'error');
+            }
+        }
+
+        async function resetAllSettings() {
+            if (!confirm('RESET ALL SETTINGS to defaults? This will clear all custom store settings (shipping, branding, SEO, etc). Products, orders, and users will NOT be affected.')) return;
+            try {
+                const res = await fetch('/api/admin/settings/bulk', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ settings: {
+                        store_name: '', store_tagline: '', store_description: '', footer_tagline: '',
+                        contact_email: '', contact_phone: '', contact_address: '', business_hours: '',
+                        currency: 'USD', order_prefix: '', min_order_amount: '0', free_shipping_threshold: '0',
+                        tax_rate: '0', tax_enabled: 'false',
+                        hero_title: '', hero_subtitle: '', hero_cta_text: '', hero_bg_image: '',
+                        meta_title: '', meta_description: '', meta_keywords: '', og_image: '',
+                        announcement_enabled: 'false', announcement_text: '', announcement_bg: '#e50000', announcement_text_color: '#ffffff',
+                        checkout_terms_enabled: 'false', checkout_terms_text: '',
+                        maintenance_mode: 'false', maintenance_message: '',
+                        low_stock_threshold: '10', guest_checkout_enabled: 'false'
+                    }})
+                });
+                if (res.ok) { showToast('All settings reset to defaults', 'success'); loadSettings(); }
+                else showToast('Failed to reset', 'error');
+            } catch (err) { showToast('Failed to reset', 'error'); }
+        }
+
+        function updateAnnouncementPreview() {
+            const text = document.getElementById('set-announcement_text')?.value || 'Your announcement here';
+            const bg = document.getElementById('set-announcement_bg')?.value || '#e50000';
+            const color = document.getElementById('set-announcement_text_color')?.value || '#ffffff';
+            const prev = document.getElementById('announcement-preview');
+            if (prev) prev.innerHTML = `<div style="padding:10px 16px;background:${bg};color:${color};text-align:center;font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;border-radius:4px;">${text.replace(/</g,'&lt;')}</div><span class="font-mono text-xs text-muted" style="margin-top:6px;display:block;">Preview</span>`;
+        }
+        function updateHeroBgPreview() {
+            const url = document.getElementById('set-hero_bg_image')?.value;
+            const prev = document.getElementById('hero-bg-preview');
+            if (prev && url) prev.innerHTML = `<img src="${url}" style="max-width:300px;max-height:120px;border-radius:8px;border:1px solid var(--border);object-fit:cover;" onerror="this.style.display='none'">`;
+            else if (prev) prev.innerHTML = '';
+        }
+        function updateOgImagePreview() {
+            const url = document.getElementById('set-og_image')?.value;
+            const prev = document.getElementById('og-image-preview');
+            if (prev && url) prev.innerHTML = `<img src="${url}" style="max-width:300px;max-height:120px;border-radius:8px;border:1px solid var(--border);object-fit:cover;" onerror="this.style.display='none'">`;
+            else if (prev) prev.innerHTML = '';
         }
 
         let currentSocials = [];

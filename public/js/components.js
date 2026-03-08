@@ -6,6 +6,20 @@ async function checkAuth() {
     } catch { return null; }
 }
 
+async function renderAnnouncementBar() {
+    try {
+        const res = await fetch('/api/settings/all');
+        const s = await res.json();
+        if (s.announcement_enabled === 'true' && s.announcement_text) {
+            const bar = document.createElement('div');
+            bar.id = 'announcement-bar';
+            bar.style.cssText = `padding:10px 16px;background:${s.announcement_bg || '#e50000'};color:${s.announcement_text_color || '#ffffff'};text-align:center;font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;z-index:1001;position:relative;`;
+            bar.textContent = s.announcement_text;
+            document.body.insertBefore(bar, document.body.firstChild);
+        }
+    } catch(e) {}
+}
+
 function renderNav(currentUser, options = {}) {
     const isStore = options.isStore || false;
     const container = document.getElementById('site-nav');

@@ -69,6 +69,20 @@ app.use(express.static(path.join(__dirname, 'public'), {
   extensions: []
 }));
 
+app.use(async (req, res, next) => {
+  if (req.path.startsWith('/api/') || req.path.startsWith('/admin') || req.path.startsWith('/login') || req.path.startsWith('/css/') || req.path.startsWith('/js/') || req.path.startsWith('/images/') || req.path.startsWith('/uploads/')) return next();
+  if (req.session && (req.session.userRole === 'admin' || req.session.userRole === 'owner')) return next();
+  try {
+    const result = await pool.query("SELECT value FROM site_settings WHERE key = 'maintenance_mode'");
+    if (result.rows.length > 0 && result.rows[0].value === 'true') {
+      const msgResult = await pool.query("SELECT value FROM site_settings WHERE key = 'maintenance_message'");
+      const msg = msgResult.rows.length > 0 && msgResult.rows[0].value ? msgResult.rows[0].value : "We're tuning the engine. The store will be back shortly.";
+      return res.status(503).send(`<!DOCTYPE html><html><head><title>Maintenance</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#050810;color:#fff;font-family:system-ui,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:20px}.wrap{max-width:500px}h1{font-size:48px;margin-bottom:8px}h1 span{color:#e50000}.sub{color:#8899aa;font-family:monospace;font-size:12px;letter-spacing:0.1em;margin-bottom:32px}.msg{color:#ccc;line-height:1.6;font-size:15px}</style></head><body><div class="wrap"><h1>PIT <span>STOP</span></h1><p class="sub">MAINTENANCE MODE</p><p class="msg">${msg.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p></div></body></html>`);
+    }
+  } catch(e) {}
+  next();
+});
+
 function requireAuth(req, res, next) {
   if (!req.session.userId) return res.status(401).json({ error: 'Not authenticated' });
   next();
@@ -642,6 +656,48 @@ app.put('/api/admin/orders/:id/status', requireAdmin, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   } finally {
     client.release();
+  }
+});
+
+app.get('/api/settings/all', async (req, res) => {
+  try {
+    const result = await pool.query("SELECT key, value FROM site_settings");
+    const settings = {};
+    for (const row of result.rows) {
+      settings[row.key] = row.value;
+    }
+    res.json(settings);
+  } catch (err) {
+    res.json({});
+  }
+});
+
+app.put('/api/admin/settings/bulk', requireAdmin, async (req, res) => {
+  const { settings } = req.body;
+  if (!settings || typeof settings !== 'object') return res.status(400).json({ error: 'Invalid data' });
+  const allowedKeys = [
+    'store_name', 'store_tagline', 'store_description', 'contact_email', 'contact_phone', 'contact_address',
+    'business_hours', 'currency', 'order_prefix', 'min_order_amount', 'free_shipping_threshold', 'tax_rate', 'tax_enabled',
+    'hero_title', 'hero_subtitle', 'hero_cta_text', 'hero_bg_image',
+    'meta_title', 'meta_description', 'meta_keywords', 'og_image',
+    'announcement_enabled', 'announcement_text', 'announcement_bg', 'announcement_text_color',
+    'checkout_terms_enabled', 'checkout_terms_text',
+    'maintenance_mode', 'maintenance_message',
+    'footer_tagline',
+    'low_stock_threshold', 'reviews_enabled', 'guest_checkout_enabled'
+  ];
+  try {
+    for (const [key, value] of Object.entries(settings)) {
+      if (!allowedKeys.includes(key)) continue;
+      const safeVal = String(value).substring(0, 2000);
+      await pool.query("INSERT INTO site_settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2", [key, safeVal]);
+    }
+    const aName = await getAdminName(req);
+    const changedKeys = Object.keys(settings).filter(k => allowedKeys.includes(k));
+    adminLog(req.session.userId, aName, 'update_settings', `Updated settings: ${changedKeys.join(', ')}`);
+    res.json({ message: 'Settings updated' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
