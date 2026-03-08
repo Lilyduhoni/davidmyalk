@@ -420,47 +420,54 @@
                 <!-- GENERAL TAB -->
                 <div class="settings-panel" id="stab-general">
                     <div class="card" style="max-width:700px;">
-                        <h3 class="settings-card-title">STORE <span class="text-red">INFORMATION</span></h3>
-                        <p class="settings-card-desc">Basic store details shown across your website.</p>
+                        <h3 class="settings-card-title">YOUR <span class="text-red">STORE</span></h3>
+                        <p class="settings-card-desc">The basics — your store's name and how it shows up on the site.</p>
                         <div class="mb-4">
                             <label class="input-label">STORE NAME</label>
-                            <input type="text" class="input-field" id="set-store_name" placeholder="DAVID MYALIK">
+                            <input type="text" class="input-field" id="set-store_name" value="DAVID MYALIK">
+                            <span class="font-mono text-xs text-muted">Your brand name — shows in the header and around the site</span>
                         </div>
                         <div class="mb-4">
                             <label class="input-label">TAGLINE</label>
-                            <input type="text" class="input-field" id="set-store_tagline" placeholder="Sideways Always">
+                            <input type="text" class="input-field" id="set-store_tagline" value="Sideways Always">
+                            <span class="font-mono text-xs text-muted">A short phrase that describes your brand</span>
                         </div>
                         <div class="mb-4">
-                            <label class="input-label">STORE DESCRIPTION</label>
-                            <textarea class="input-field" id="set-store_description" style="min-height:80px;" placeholder="Drift culture apparel for those who live life sideways..."></textarea>
+                            <label class="input-label">ABOUT YOUR STORE</label>
+                            <textarea class="input-field" id="set-store_description" style="min-height:80px;">Drift culture apparel for those who live life sideways.</textarea>
+                            <span class="font-mono text-xs text-muted">A longer description of what your store is about</span>
                         </div>
                         <div class="mb-4">
-                            <label class="input-label">FOOTER TAGLINE</label>
-                            <input type="text" class="input-field" id="set-footer_tagline" placeholder="Drift culture apparel for those who live life sideways. Born from the smoke, built for the streets.">
-                            <span class="font-mono text-xs text-muted">Shown in the footer under the brand name</span>
+                            <label class="input-label">FOOTER TEXT</label>
+                            <input type="text" class="input-field" id="set-footer_tagline" value="Drift culture apparel for those who live life sideways. Born from the smoke, built for the streets.">
+                            <span class="font-mono text-xs text-muted">The text that shows at the very bottom of every page, under your logo</span>
                         </div>
-                        <button class="btn btn-primary" onclick="saveBulkSettings(['store_name','store_tagline','store_description','footer_tagline'])">SAVE STORE INFO</button>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['store_name','store_tagline','store_description','footer_tagline'])">SAVE</button>
                     </div>
                     <div class="card" style="max-width:700px;margin-top:24px;">
-                        <h3 class="settings-card-title">CONTACT <span class="text-red">DETAILS</span></h3>
-                        <p class="settings-card-desc">Contact information shown on your site and in emails.</p>
+                        <h3 class="settings-card-title">CONTACT <span class="text-red">INFO</span></h3>
+                        <p class="settings-card-desc">How customers can reach you. This shows up on the site and in emails.</p>
                         <div class="mb-4">
-                            <label class="input-label">CONTACT EMAIL</label>
-                            <input type="email" class="input-field" id="set-contact_email" placeholder="contact@davidmyalik.com">
+                            <label class="input-label">EMAIL ADDRESS</label>
+                            <input type="email" class="input-field" id="set-contact_email" value="contact@davidmyalik.com">
+                            <span class="font-mono text-xs text-muted">Where customers can email you</span>
                         </div>
                         <div class="mb-4">
-                            <label class="input-label">CONTACT PHONE</label>
-                            <input type="text" class="input-field" id="set-contact_phone" placeholder="+1 (555) 123-4567">
+                            <label class="input-label">PHONE NUMBER</label>
+                            <input type="text" class="input-field" id="set-contact_phone" value="+1 (555) 123-4567">
+                            <span class="font-mono text-xs text-muted">Your business phone number (optional)</span>
                         </div>
                         <div class="mb-4">
-                            <label class="input-label">BUSINESS ADDRESS</label>
-                            <textarea class="input-field" id="set-contact_address" style="min-height:60px;" placeholder="123 Drift Lane, Smoke City, CA 90210"></textarea>
+                            <label class="input-label">ADDRESS</label>
+                            <textarea class="input-field" id="set-contact_address" style="min-height:60px;">123 Drift Lane, Smoke City, CA 90210</textarea>
+                            <span class="font-mono text-xs text-muted">Your business or mailing address (optional)</span>
                         </div>
                         <div class="mb-4">
                             <label class="input-label">BUSINESS HOURS</label>
-                            <input type="text" class="input-field" id="set-business_hours" placeholder="Mon-Fri 9AM-5PM PST">
+                            <input type="text" class="input-field" id="set-business_hours" value="Mon-Fri 9AM-5PM PST">
+                            <span class="font-mono text-xs text-muted">When you're available — for example "Mon-Fri 9AM-5PM"</span>
                         </div>
-                        <button class="btn btn-primary" onclick="saveBulkSettings(['contact_email','contact_phone','contact_address','business_hours'])">SAVE CONTACT INFO</button>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['contact_email','contact_phone','contact_address','business_hours'])">SAVE</button>
                     </div>
                 </div>
 
@@ -468,49 +475,52 @@
                 <div class="settings-panel" id="stab-shipping" style="display:none;">
                     <div class="card" style="max-width:600px;">
                         <h3 class="settings-card-title">SHIPPING <span class="text-red">COST</span></h3>
-                        <p class="settings-card-desc">Flat-rate shipping applied to every order at checkout. Set to 0 for free shipping.</p>
+                        <p class="settings-card-desc">How much you charge for shipping on every order. Set it to 0 if you want all shipping to be free.</p>
                         <div style="display:flex;align-items:center;gap:12px;">
                             <span style="font-size:20px;font-weight:700;">$</span>
-                            <input type="number" step="0.01" min="0" class="input-field" id="settings-shipping-cost" style="max-width:150px;font-size:18px;text-align:center;">
+                            <input type="number" step="0.01" min="0" class="input-field" id="settings-shipping-cost" style="max-width:150px;font-size:18px;text-align:center;" value="15.00">
                             <button class="btn btn-primary" onclick="saveShippingCost()">SAVE</button>
                         </div>
-                        <div id="shipping-save-status" class="font-mono text-xs text-muted" style="margin-top:10px;"></div>
+                        <span class="font-mono text-xs text-muted" style="margin-top:10px;display:block;">This is a flat rate — every order pays this same amount for shipping</span>
+                        <div id="shipping-save-status" class="font-mono text-xs text-muted" style="margin-top:6px;"></div>
                     </div>
                     <div class="card" style="max-width:600px;margin-top:24px;">
-                        <h3 class="settings-card-title">FREE SHIPPING <span class="text-red">THRESHOLD</span></h3>
-                        <p class="settings-card-desc">Orders above this amount get free shipping. Set to 0 to disable.</p>
+                        <h3 class="settings-card-title">FREE SHIPPING <span class="text-red">OVER $__</span></h3>
+                        <p class="settings-card-desc">If a customer spends this much or more, they get free shipping. Set to 0 to turn this off.</p>
                         <div style="display:flex;align-items:center;gap:12px;">
                             <span style="font-size:20px;font-weight:700;">$</span>
                             <input type="number" step="0.01" min="0" class="input-field" id="set-free_shipping_threshold" style="max-width:150px;font-size:18px;text-align:center;" value="0">
                         </div>
-                        <button class="btn btn-primary" onclick="saveBulkSettings(['free_shipping_threshold'])" style="margin-top:12px;">SAVE THRESHOLD</button>
+                        <span class="font-mono text-xs text-muted" style="margin-top:10px;display:block;">Example: Set to 75 and orders over $75 ship free. Customers will see a message like "Add $X more for free shipping!"</span>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['free_shipping_threshold'])" style="margin-top:12px;">SAVE</button>
                     </div>
                     <div class="card" style="max-width:600px;margin-top:24px;">
-                        <h3 class="settings-card-title">TAX <span class="text-red">SETTINGS</span></h3>
-                        <p class="settings-card-desc">Configure sales tax applied at checkout.</p>
+                        <h3 class="settings-card-title">SALES <span class="text-red">TAX</span></h3>
+                        <p class="settings-card-desc">Add sales tax to orders at checkout. Leave this off if you don't need to charge tax.</p>
                         <div class="mb-4">
                             <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
                                 <input type="checkbox" id="set-tax_enabled" style="accent-color:var(--primary);width:20px;height:20px;">
-                                <span class="font-mono text-xs">ENABLE TAX</span>
+                                <span class="font-mono text-xs">CHARGE TAX ON ORDERS</span>
                             </label>
                         </div>
                         <div class="mb-4">
-                            <label class="input-label">TAX RATE (%)</label>
+                            <label class="input-label">TAX RATE</label>
                             <div style="display:flex;align-items:center;gap:8px;">
                                 <input type="number" step="0.01" min="0" max="100" class="input-field" id="set-tax_rate" style="max-width:120px;text-align:center;" value="0">
                                 <span class="font-mono text-xs text-muted">%</span>
                             </div>
+                            <span class="font-mono text-xs text-muted">Example: Enter 8.5 for 8.5% tax. A $100 order would have $8.50 in tax added.</span>
                         </div>
-                        <button class="btn btn-primary" onclick="saveBulkSettings(['tax_enabled','tax_rate'])">SAVE TAX SETTINGS</button>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['tax_enabled','tax_rate'])">SAVE</button>
                     </div>
                     <div class="card" style="max-width:600px;margin-top:24px;">
-                        <h3 class="settings-card-title">ORDER <span class="text-red">SETTINGS</span></h3>
-                        <p class="settings-card-desc">Configure order numbering and minimums.</p>
+                        <h3 class="settings-card-title">ORDER <span class="text-red">OPTIONS</span></h3>
+                        <p class="settings-card-desc">Customize how orders are numbered and set spending rules.</p>
                         <div class="grid-2 mb-4">
                             <div>
                                 <label class="input-label">ORDER NUMBER PREFIX</label>
-                                <input type="text" class="input-field" id="set-order_prefix" placeholder="DM-" maxlength="10">
-                                <span class="font-mono text-xs text-muted">e.g. DM-00001</span>
+                                <input type="text" class="input-field" id="set-order_prefix" value="DM-" maxlength="10">
+                                <span class="font-mono text-xs text-muted">Goes before order numbers, like DM-00001</span>
                             </div>
                             <div>
                                 <label class="input-label">MINIMUM ORDER AMOUNT</label>
@@ -518,7 +528,7 @@
                                     <span style="font-weight:700;">$</span>
                                     <input type="number" step="0.01" min="0" class="input-field" id="set-min_order_amount" value="0">
                                 </div>
-                                <span class="font-mono text-xs text-muted">Set to 0 for no minimum</span>
+                                <span class="font-mono text-xs text-muted">The smallest order you'll accept. 0 means no minimum.</span>
                             </div>
                         </div>
                         <div class="mb-4">
@@ -530,29 +540,33 @@
                                 <option value="CAD">CAD (C$)</option>
                                 <option value="AUD">AUD (A$)</option>
                             </select>
+                            <span class="font-mono text-xs text-muted">What currency your prices are shown in</span>
                         </div>
-                        <button class="btn btn-primary" onclick="saveBulkSettings(['order_prefix','min_order_amount','currency'])">SAVE ORDER SETTINGS</button>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['order_prefix','min_order_amount','currency'])">SAVE</button>
                     </div>
                 </div>
 
                 <!-- HERO TAB -->
                 <div class="settings-panel" id="stab-branding" style="display:none;">
                     <div class="card" style="max-width:700px;">
-                        <h3 class="settings-card-title">HERO <span class="text-red">SECTION</span></h3>
-                        <p class="settings-card-desc">Customize the homepage hero banner that visitors see first.</p>
+                        <h3 class="settings-card-title">HOMEPAGE <span class="text-red">HERO</span></h3>
+                        <p class="settings-card-desc">This is the big banner at the top of your homepage — the first thing visitors see.</p>
                         <div class="mb-4">
-                            <label class="input-label">HERO TITLE</label>
-                            <input type="text" class="input-field" id="set-hero_title" placeholder="MYALIK">
+                            <label class="input-label">BIG TITLE</label>
+                            <input type="text" class="input-field" id="set-hero_title" value="MYALIK">
+                            <span class="font-mono text-xs text-muted">The large bold text in the center of the banner</span>
                         </div>
                         <div class="mb-4">
-                            <label class="input-label">HERO SUBTITLE</label>
-                            <input type="text" class="input-field" id="set-hero_subtitle" placeholder="SIDEWAYS ALWAYS • EST. 2026">
+                            <label class="input-label">TEXT BELOW THE TITLE</label>
+                            <input type="text" class="input-field" id="set-hero_subtitle" value="SIDEWAYS ALWAYS • EST. 2026">
+                            <span class="font-mono text-xs text-muted">The smaller text that shows right under the big title</span>
                         </div>
                         <div class="mb-4">
-                            <label class="input-label">CTA BUTTON TEXT</label>
-                            <input type="text" class="input-field" id="set-hero_cta_text" placeholder="SHOP THE DROP">
+                            <label class="input-label">BUTTON TEXT</label>
+                            <input type="text" class="input-field" id="set-hero_cta_text" value="SHOP THE DROP">
+                            <span class="font-mono text-xs text-muted">What the red button says — this takes customers to the shop</span>
                         </div>
-                        <button class="btn btn-primary" onclick="saveBulkSettings(['hero_title','hero_subtitle','hero_cta_text'])">SAVE HERO SECTION</button>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['hero_title','hero_subtitle','hero_cta_text'])">SAVE</button>
                     </div>
                 </div>
 
@@ -560,35 +574,41 @@
                 <div class="settings-panel" id="stab-content" style="display:none;">
                     <div class="card" style="max-width:700px;">
                         <h3 class="settings-card-title">THE GRIND <span class="text-red">SECTION</span></h3>
-                        <p class="settings-card-desc">Edit the "The Grind" section on the homepage. Use a pipe (|) in the title to make the second part red, e.g. "THE |GRIND".</p>
+                        <p class="settings-card-desc">This is the "about" section on your homepage — it tells visitors what your brand is about. Tip: Put a | before a word in the title to make it red, like "THE |GRIND".</p>
                         <div class="mb-4">
                             <label class="input-label">SECTION TITLE</label>
-                            <input type="text" class="input-field" id="grind-edit-title" placeholder="THE |GRIND">
+                            <input type="text" class="input-field" id="grind-edit-title" value="THE |GRIND">
+                            <span class="font-mono text-xs text-muted">Use | before a word to make it red. Example: "THE |GRIND" shows GRIND in red.</span>
                         </div>
                         <div class="mb-4">
                             <label class="input-label">MAIN TEXT</label>
-                            <textarea class="input-field" id="grind-edit-text" style="min-height:100px;" placeholder="The main paragraph text..."></textarea>
+                            <textarea class="input-field" id="grind-edit-text" style="min-height:100px;">Born from the smoke and built for the streets. This isn't just merch — it's a lifestyle. Every piece represents the grind, the passion, and the culture of living life sideways.</textarea>
+                            <span class="font-mono text-xs text-muted">The paragraph that tells your brand's story</span>
                         </div>
                         <div class="mb-4">
                             <label class="input-label">QUOTE</label>
-                            <input type="text" class="input-field" id="grind-edit-quote" placeholder="Every drift starts with a decision...">
+                            <input type="text" class="input-field" id="grind-edit-quote" value="Every drift starts with a decision to turn.">
+                            <span class="font-mono text-xs text-muted">A short quote or motto that shows in this section</span>
                         </div>
                         <div class="mb-4">
-                            <label class="input-label">IMAGE URL</label>
-                            <input type="text" class="input-field" id="grind-edit-image" placeholder="https://...">
+                            <label class="input-label">IMAGE LINK</label>
+                            <input type="text" class="input-field" id="grind-edit-image" value="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=2070&auto=format&fit=crop">
+                            <span class="font-mono text-xs text-muted">Paste a link to an image to show in this section</span>
                             <div id="grind-image-preview" style="margin-top:10px;"></div>
                         </div>
                         <div class="grid-2 mb-4">
                             <div>
                                 <label class="input-label">LINK URL</label>
-                                <input type="text" class="input-field" id="grind-edit-link-url" placeholder="https://www.youtube.com/...">
+                                <input type="text" class="input-field" id="grind-edit-link-url" value="https://www.youtube.com/">
+                                <span class="font-mono text-xs text-muted">Where the button links to</span>
                             </div>
                             <div>
-                                <label class="input-label">LINK TEXT</label>
-                                <input type="text" class="input-field" id="grind-edit-link-text" placeholder="Watch on YouTube">
+                                <label class="input-label">LINK BUTTON TEXT</label>
+                                <input type="text" class="input-field" id="grind-edit-link-text" value="Watch on YouTube">
+                                <span class="font-mono text-xs text-muted">What the button says</span>
                             </div>
                         </div>
-                        <button class="btn btn-primary" onclick="saveGrindSection()">SAVE GRIND SECTION</button>
+                        <button class="btn btn-primary" onclick="saveGrindSection()">SAVE</button>
                         <div id="grind-save-status" class="font-mono text-xs text-muted" style="margin-top:10px;"></div>
                     </div>
                 </div>
@@ -596,10 +616,10 @@
                 <!-- SOCIAL LINKS TAB -->
                 <div class="settings-panel" id="stab-socials" style="display:none;">
                     <div class="card" style="max-width:700px;">
-                        <h3 class="settings-card-title">SOCIAL <span class="text-red">LINKS</span></h3>
-                        <p class="settings-card-desc">Manage footer social media icons. Toggle them on/off and set URLs. Enabled links with URLs will appear as icons in the footer.</p>
+                        <h3 class="settings-card-title">SOCIAL <span class="text-red">MEDIA</span></h3>
+                        <p class="settings-card-desc">Add your social media links here. Turn them on and paste the URL — they'll show up as icons in the footer of your site. If a link is turned off or empty, it won't show.</p>
                         <div id="socials-editor"></div>
-                        <button class="btn btn-primary" onclick="saveSocials()" style="margin-top:16px;">SAVE SOCIAL LINKS</button>
+                        <button class="btn btn-primary" onclick="saveSocials()" style="margin-top:16px;">SAVE</button>
                         <div id="socials-save-status" class="font-mono text-xs text-muted" style="margin-top:10px;"></div>
                     </div>
                 </div>
@@ -608,61 +628,64 @@
                 <div class="settings-panel" id="stab-checkout" style="display:none;">
                     <div class="card" style="max-width:700px;">
                         <h3 class="settings-card-title">CHECKOUT <span class="text-red">OPTIONS</span></h3>
-                        <p class="settings-card-desc">Configure checkout behavior and policies.</p>
+                        <p class="settings-card-desc">Control what happens when a customer is checking out and buying something.</p>
                         <div class="mb-4">
                             <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
                                 <input type="checkbox" id="set-guest_checkout_enabled" style="accent-color:var(--primary);width:20px;height:20px;">
                                 <span class="font-mono text-xs">ALLOW GUEST CHECKOUT</span>
                             </label>
-                            <span class="font-mono text-xs text-muted" style="margin-left:30px;">Let customers check out without creating an account</span>
+                            <span class="font-mono text-xs text-muted" style="margin-left:30px;">When on, customers can buy without making an account first</span>
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-4" style="margin-top:20px;">
                             <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
                                 <input type="checkbox" id="set-checkout_terms_enabled" style="accent-color:var(--primary);width:20px;height:20px;">
-                                <span class="font-mono text-xs">REQUIRE TERMS AGREEMENT</span>
+                                <span class="font-mono text-xs">REQUIRE AGREEMENT BEFORE PURCHASE</span>
                             </label>
-                            <span class="font-mono text-xs text-muted" style="margin-left:30px;">Customers must agree to terms before checkout</span>
+                            <span class="font-mono text-xs text-muted" style="margin-left:30px;">When on, customers must check a box agreeing to your terms before they can place an order</span>
                         </div>
                         <div class="mb-4">
-                            <label class="input-label">TERMS / POLICY TEXT</label>
-                            <textarea class="input-field" id="set-checkout_terms_text" style="min-height:80px;" placeholder="By placing your order, you agree to our Terms of Service and Return Policy..."></textarea>
+                            <label class="input-label">YOUR TERMS / POLICY</label>
+                            <textarea class="input-field" id="set-checkout_terms_text" style="min-height:80px;">By placing your order, you agree to our Terms of Service and Return Policy. All sales are final unless the item is defective or damaged.</textarea>
+                            <span class="font-mono text-xs text-muted">This is the text customers will see and agree to. Write your terms, return policy, etc.</span>
                         </div>
-                        <button class="btn btn-primary" onclick="saveBulkSettings(['guest_checkout_enabled','checkout_terms_enabled','checkout_terms_text'])">SAVE CHECKOUT SETTINGS</button>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['guest_checkout_enabled','checkout_terms_enabled','checkout_terms_text'])">SAVE</button>
                     </div>
                 </div>
 
                 <!-- ADVANCED TAB -->
                 <div class="settings-panel" id="stab-advanced" style="display:none;">
                     <div class="card" style="max-width:700px;">
-                        <h3 class="settings-card-title">INVENTORY <span class="text-red">SETTINGS</span></h3>
-                        <p class="settings-card-desc">Configure how inventory is managed and displayed.</p>
+                        <h3 class="settings-card-title">LOW STOCK <span class="text-red">WARNING</span></h3>
+                        <p class="settings-card-desc">When a product's stock drops to this number or below, customers will see a "Only X left!" warning on the product. This creates urgency and lets shoppers know it's almost gone.</p>
                         <div class="mb-4">
-                            <label class="input-label">LOW STOCK THRESHOLD</label>
+                            <label class="input-label">SHOW WARNING WHEN STOCK IS AT OR BELOW</label>
                             <input type="number" min="1" class="input-field" id="set-low_stock_threshold" style="max-width:120px;" value="10">
-                            <span class="font-mono text-xs text-muted">Products at or below this stock level show "Only X left" on the storefront</span>
+                            <span class="font-mono text-xs text-muted">Example: Set to 5, and anything with 5 or fewer items will show "Only 5 left!"</span>
                         </div>
-                        <button class="btn btn-primary" onclick="saveBulkSettings(['low_stock_threshold'])">SAVE INVENTORY SETTINGS</button>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['low_stock_threshold'])">SAVE</button>
                     </div>
                     <div class="card" style="max-width:700px;margin-top:24px;">
                         <h3 class="settings-card-title">MAINTENANCE <span class="text-red">MODE</span></h3>
-                        <p class="settings-card-desc">Temporarily disable your store for customers. Admins can still access the site.</p>
+                        <p class="settings-card-desc">Need to work on your store? Turn this on and customers will see a "We'll be back soon" page instead of the store. You (the admin) can still use the site normally.</p>
                         <div class="mb-4">
                             <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
                                 <input type="checkbox" id="set-maintenance_mode" style="accent-color:var(--primary);width:20px;height:20px;">
-                                <span class="font-mono text-xs" style="color:var(--red);font-weight:600;">ENABLE MAINTENANCE MODE</span>
+                                <span class="font-mono text-xs" style="color:var(--red);font-weight:600;">TURN ON MAINTENANCE MODE</span>
                             </label>
+                            <span class="font-mono text-xs text-muted" style="margin-left:30px;">When on, only admins can see the site. Everyone else sees the maintenance page.</span>
                         </div>
                         <div class="mb-4">
-                            <label class="input-label">MAINTENANCE MESSAGE</label>
-                            <textarea class="input-field" id="set-maintenance_message" style="min-height:80px;" placeholder="We're tuning the engine. The store will be back shortly..."></textarea>
+                            <label class="input-label">MESSAGE TO SHOW VISITORS</label>
+                            <textarea class="input-field" id="set-maintenance_message" style="min-height:80px;">We're tuning the engine. The store will be back shortly.</textarea>
+                            <span class="font-mono text-xs text-muted">This message shows on the maintenance page so visitors know you'll be back</span>
                         </div>
-                        <button class="btn btn-primary" onclick="saveBulkSettings(['maintenance_mode','maintenance_message'])">SAVE MAINTENANCE SETTINGS</button>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['maintenance_mode','maintenance_message'])">SAVE</button>
                     </div>
                     <div class="card" style="max-width:700px;margin-top:24px;border-color:rgba(239,68,68,0.3);">
                         <h3 class="settings-card-title" style="color:var(--red);">DANGER <span style="color:var(--text);">ZONE</span></h3>
-                        <p class="settings-card-desc">Destructive actions that cannot be undone.</p>
+                        <p class="settings-card-desc">This will wipe ALL your settings back to defaults. Your products, orders, and customers are safe — only the settings on this page get reset. You can't undo this.</p>
                         <div style="display:flex;gap:12px;flex-wrap:wrap;">
-                            <button class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.3);" onclick="resetAllSettings()">RESET ALL SETTINGS</button>
+                            <button class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.3);" onclick="resetAllSettings()">RESET ALL SETTINGS TO DEFAULT</button>
                         </div>
                     </div>
                 </div>

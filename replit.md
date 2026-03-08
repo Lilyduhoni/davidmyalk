@@ -36,7 +36,7 @@ api/checkout.js        - Original Netlify function (reference only)
 - `addresses` - Saved shipping addresses
 - `password_reset_tokens` - Password reset tokens
 - `admin_logs` - Admin activity log (user_id, user_name, action, details, created_at)
-- `site_settings` - Key-value store for all configurable settings (shipping, branding, SEO, socials, etc.)
+- `site_settings` - Key-value store for all configurable settings (shipping, hero, socials, checkout, etc.)
 - `session` - Express session store
 
 ## Key Features
