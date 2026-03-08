@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Returns | DAVID MYALIK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .info-page { padding-top: 80px; min-height: 100vh; background: var(--navy); }
+        .info-hero {
+            padding: 80px 16px 60px; text-align: center;
+            background: var(--navy-light); border-bottom: 1px solid var(--border);
+        }
+        .info-hero h1 { font-size: clamp(40px, 6vw, 72px); margin-bottom: 12px; }
+        .info-content { max-width: 800px; margin: 0 auto; padding: 60px 24px; }
+        .info-nav {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 50;
+            background: rgba(5,8,16,0.95); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border); padding: 16px 24px;
+        }
+        .info-nav-inner {
+            max-width: 1200px; margin: 0 auto; display: flex;
+            justify-content: space-between; align-items: center;
+        }
+        .back-link {
+            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-mono); font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--text-muted); transition: color 0.3s;
+        }
+        .back-link:hover { color: var(--primary); }
+        .info-card {
+            background: var(--navy-card); border: 1px solid var(--border);
+            padding: 32px; margin-bottom: 24px;
+        }
+        .info-card h3 { font-size: 22px; margin-bottom: 16px; }
+        .info-card p, .info-card li {
+            font-family: var(--font-mono); font-size: 13px;
+            color: var(--text-muted); line-height: 1.8;
+        }
+        .info-card ul { list-style: none; padding: 0; }
+        .info-card li { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; align-items: flex-start; gap: 12px; }
+        .info-card li:last-child { border-bottom: none; }
+        .step-num {
+            width: 28px; height: 28px; flex-shrink: 0;
+            background: rgba(255,0,0,0.1); border: 1px solid rgba(255,0,0,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-mono); font-size: 11px; color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <nav class="info-nav">
+        <div class="info-nav-inner">
+            <a href="/" class="nav-brand">DAVID <span>MYALIK</span></a>
+            <a href="/" class="back-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to Store
+            </a>
+        </div>
+    </nav>
+
+    <div class="info-page">
+        <div class="info-hero">
+            <h1>RETURNS & <span class="text-red">EXCHANGES</span></h1>
+            <p class="font-mono text-muted" style="font-size:12px;letter-spacing:0.2em;">OUR RETURN POLICY</p>
+        </div>
+
+        <div class="info-content">
+            <div class="info-card">
+                <h3>RETURN <span class="text-red">POLICY</span></h3>
+                <p>We want you to be 100% satisfied with your purchase. If for any reason you're not happy with your order, we accept returns within 30 days of delivery. Items must meet the following conditions to be eligible for a return:</p>
+                <ul style="margin-top:16px;">
+                    <li>Item must be unworn, unwashed, and in original condition</li>
+                    <li>All original tags must still be attached</li>
+                    <li>Item must be in its original packaging</li>
+                    <li>Proof of purchase (order number or receipt) is required</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3>HOW TO <span class="text-red">RETURN</span></h3>
+                <ul>
+                    <li><span class="step-num">1</span><span>Contact us at contact@davidmyalik.com with your order number and reason for return.</span></li>
+                    <li><span class="step-num">2</span><span>We'll review your request and send you a return authorization and shipping instructions within 1-2 business days.</span></li>
+                    <li><span class="step-num">3</span><span>Ship the item back to us using the provided instructions. Return shipping costs are the buyer's responsibility unless the item is defective.</span></li>
+                    <li><span class="step-num">4</span><span>Once we receive and inspect the returned item, we'll process your refund within 5-7 business days. Refunds are issued to the original payment method.</span></li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3>EXCHANGES</h3>
+                <p>Need a different size or color? We're happy to help with exchanges. Contact us with your order number and the item you'd like to exchange for. Exchanges are subject to availability. If the item you want is out of stock, we'll issue a full refund instead.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>NON-RETURNABLE <span class="text-red">ITEMS</span></h3>
+                <ul>
+                    <li>Items that have been worn, washed, or altered</li>
+                    <li>Items without original tags</li>
+                    <li>Sale or clearance items (unless defective)</li>
+                    <li>Gift cards</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3>DAMAGED OR <span class="text-red">DEFECTIVE</span> ITEMS</h3>
+                <p>If you receive a damaged or defective item, contact us immediately at contact@davidmyalik.com with photos of the issue. We'll arrange a free return and send you a replacement or full refund at no cost to you.</p>
+            </div>
+
+            <div style="text-align:center;margin-top:48px;">
+                <p class="font-mono text-muted" style="font-size:12px;margin-bottom:16px;">Need to start a return?</p>
+                <a href="mailto:contact@davidmyalik.com" class="btn btn-primary">EMAIL US</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

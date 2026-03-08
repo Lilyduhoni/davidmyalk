@@ -20,6 +20,9 @@ public/
   forgot-password.html - Password reset flow
   dashboard.html       - User dashboard (orders, settings, addresses)
   admin.html           - Admin panel (products, orders, users management)
+  help-center.html     - Help Center / FAQ page
+  shipping-info.html   - Shipping information page
+  returns.html         - Returns & exchanges policy page
   css/styles.css       - Shared stylesheet
 api/checkout.js        - Original Netlify function (reference only)
 ```
@@ -44,7 +47,9 @@ api/checkout.js        - Original Netlify function (reference only)
 - Cart starts empty each page load (no localStorage persistence)
 - Cart badge hidden when empty, shown with count when items added
 - Auth pages (login, signup, forgot-password) have "Back to Store" navigation
-- Scrolling marquee banner, feature strip, multi-column footer with social links
+- Category filter tabs in shop section (filter by hats, keychains, stickers, etc.)
+- Multi-column footer with Company and Support columns (YouTube, Instagram social icons)
+- Dedicated pages: Help Center (FAQ), Shipping Info, Returns & Exchanges
 - Server-side price validation on orders (prevents price tampering)
 
 ## API Endpoints

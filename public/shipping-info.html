@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipping Info | DAVID MYALIK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .info-page { padding-top: 80px; min-height: 100vh; background: var(--navy); }
+        .info-hero {
+            padding: 80px 16px 60px; text-align: center;
+            background: var(--navy-light); border-bottom: 1px solid var(--border);
+        }
+        .info-hero h1 { font-size: clamp(40px, 6vw, 72px); margin-bottom: 12px; }
+        .info-content { max-width: 800px; margin: 0 auto; padding: 60px 24px; }
+        .info-nav {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 50;
+            background: rgba(5,8,16,0.95); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border); padding: 16px 24px;
+        }
+        .info-nav-inner {
+            max-width: 1200px; margin: 0 auto; display: flex;
+            justify-content: space-between; align-items: center;
+        }
+        .back-link {
+            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-mono); font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--text-muted); transition: color 0.3s;
+        }
+        .back-link:hover { color: var(--primary); }
+        .info-card {
+            background: var(--navy-card); border: 1px solid var(--border);
+            padding: 32px; margin-bottom: 24px;
+        }
+        .info-card h3 {
+            font-size: 22px; margin-bottom: 16px;
+        }
+        .info-card p, .info-card li {
+            font-family: var(--font-mono); font-size: 13px;
+            color: var(--text-muted); line-height: 1.8;
+        }
+        .info-card ul { list-style: none; padding: 0; }
+        .info-card li { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .info-card li:last-child { border-bottom: none; }
+        .shipping-table {
+            width: 100%; border-collapse: collapse; margin-top: 16px;
+        }
+        .shipping-table th {
+            font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+            letter-spacing: 0.1em; color: var(--text-muted); padding: 12px 16px;
+            text-align: left; border-bottom: 1px solid var(--border);
+        }
+        .shipping-table td {
+            padding: 14px 16px; font-family: var(--font-mono); font-size: 13px;
+            color: var(--text-muted); border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+    </style>
+</head>
+<body>
+    <nav class="info-nav">
+        <div class="info-nav-inner">
+            <a href="/" class="nav-brand">DAVID <span>MYALIK</span></a>
+            <a href="/" class="back-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to Store
+            </a>
+        </div>
+    </nav>
+
+    <div class="info-page">
+        <div class="info-hero">
+            <h1>SHIPPING <span class="text-red">INFO</span></h1>
+            <p class="font-mono text-muted" style="font-size:12px;letter-spacing:0.2em;">EVERYTHING YOU NEED TO KNOW ABOUT DELIVERY</p>
+        </div>
+
+        <div class="info-content">
+            <div class="info-card">
+                <h3>PROCESSING <span class="text-red">TIME</span></h3>
+                <p>All orders are processed within 1-3 business days after payment is confirmed. Orders placed on weekends or holidays will be processed the next business day. You'll receive a confirmation email once your order ships with tracking information.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>SHIPPING <span class="text-red">RATES</span></h3>
+                <table class="shipping-table">
+                    <thead>
+                        <tr>
+                            <th>Destination</th>
+                            <th>Method</th>
+                            <th>Est. Time</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>United States</td>
+                            <td>Standard</td>
+                            <td>5-7 business days</td>
+                            <td>$15.00</td>
+                        </tr>
+                        <tr>
+                            <td>United States</td>
+                            <td>Express</td>
+                            <td>2-3 business days</td>
+                            <td>$25.00</td>
+                        </tr>
+                        <tr>
+                            <td>Canada</td>
+                            <td>Standard</td>
+                            <td>7-14 business days</td>
+                            <td>$20.00</td>
+                        </tr>
+                        <tr>
+                            <td>United Kingdom</td>
+                            <td>Standard</td>
+                            <td>10-18 business days</td>
+                            <td>$25.00</td>
+                        </tr>
+                        <tr>
+                            <td>Australia</td>
+                            <td>Standard</td>
+                            <td>12-20 business days</td>
+                            <td>$30.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="info-card">
+                <h3>ORDER <span class="text-red">TRACKING</span></h3>
+                <p>Once your order ships, you'll receive a tracking number. You can track your order by logging into your account and visiting the Dashboard. Tracking updates may take 24-48 hours to appear after your order ships.</p>
+            </div>
+
+            <div class="info-card">
+                <h3>IMPORTANT <span class="text-red">NOTES</span></h3>
+                <ul>
+                    <li>We are not responsible for delays caused by customs, weather, or carrier issues.</li>
+                    <li>Please ensure your shipping address is correct before placing your order. We cannot redirect packages once shipped.</li>
+                    <li>International orders may be subject to customs duties and taxes, which are the buyer's responsibility.</li>
+                    <li>PO Boxes are accepted for US standard shipping only.</li>
+                </ul>
+            </div>
+
+            <div style="text-align:center;margin-top:48px;">
+                <p class="font-mono text-muted" style="font-size:12px;margin-bottom:16px;">Have questions about shipping?</p>
+                <a href="mailto:contact@davidmyalik.com" class="btn btn-secondary">CONTACT US</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

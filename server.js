@@ -527,7 +527,7 @@ app.post('/.netlify/functions/checkout', requireAuth, async (req, res) => {
 
 app.get('*', (req, res) => {
   const page = req.path.substring(1);
-  const validPages = ['login', 'signup', 'forgot-password', 'reset-password', 'dashboard', 'admin'];
+  const validPages = ['login', 'signup', 'forgot-password', 'reset-password', 'dashboard', 'admin', 'help-center', 'shipping-info', 'returns'];
   if (validPages.includes(page)) {
     return res.sendFile(path.join(__dirname, 'public', `${page}.html`));
   }
