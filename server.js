@@ -625,35 +625,167 @@ app.get('/api/admin/users/:id', requireAdmin, async (req, res) => {
   }
 });
 
-app.post('/.netlify/functions/checkout', requireAuth, async (req, res) => {
+app.post('/api/checkout', requireAuth, async (req, res) => {
   const { cart, shipping } = req.body;
   if (!cart || cart.length === 0) return res.status(400).json({ error: 'Cart is empty' });
+  if (!shipping) return res.status(400).json({ error: 'Shipping information required' });
+
   try {
-    const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_51T7aEGB9YWRWqBOnfewaL31hksdyb6ZKSsf45ErssZTwSm6OVhr8pi7FpY4CkxaIltJrhfBLF2gyCgvQ69MjidE100PsTRDw9U');
-    const lineItems = cart.map(item => ({
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    if (!stripeKey) return res.status(500).json({ error: 'Payment system not configured' });
+    const stripe = require('stripe')(stripeKey);
+
+    const validatedItems = [];
+    for (const item of cart) {
+      const product = await pool.query('SELECT id, stock, price, name, image_url, is_active FROM products WHERE id = $1', [item.id]);
+      if (product.rows.length === 0 || !product.rows[0].is_active) {
+        return res.status(400).json({ error: `Product "${item.name || 'unknown'}" is not available` });
+      }
+      if (product.rows[0].stock < item.qty) {
+        return res.status(400).json({ error: `"${product.rows[0].name}" only has ${product.rows[0].stock} in stock` });
+      }
+      validatedItems.push({
+        id: product.rows[0].id,
+        name: product.rows[0].name,
+        price: parseFloat(product.rows[0].price),
+        image_url: product.rows[0].image_url,
+        qty: parseInt(item.qty)
+      });
+    }
+
+    const lineItems = validatedItems.map(item => ({
       price_data: {
         currency: 'usd',
-        product_data: { name: item.name, images: [item.img || item.image_url] },
+        product_data: { name: item.name },
         unit_amount: Math.round(item.price * 100),
       },
       quantity: item.qty,
     }));
 
+    lineItems.push({
+      price_data: {
+        currency: 'usd',
+        product_data: { name: 'Shipping' },
+        unit_amount: 1500,
+      },
+      quantity: 1,
+    });
+
     const host = req.headers.host;
-    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
     const baseUrl = `${protocol}://${host}`;
 
-    const session = await stripe.checkout.sessions.create({
+    const checkoutSession = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${baseUrl}/#success`,
-      cancel_url: `${baseUrl}/#shop`,
+      success_url: `${baseUrl}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/?checkout=cancelled`,
+      metadata: {
+        userId: String(req.session.userId),
+        cart: JSON.stringify(validatedItems.map(i => ({ id: i.id, qty: i.qty }))),
+        shippingFirstName: shipping.firstName,
+        shippingLastName: shipping.lastName,
+        shippingAddress: shipping.address,
+        shippingCity: shipping.city,
+        shippingState: shipping.state || '',
+        shippingZip: shipping.zip,
+        shippingCountry: shipping.country
+      }
     });
 
-    res.json({ url: session.url });
+    res.json({ url: checkoutSession.url });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message || 'Checkout failed' });
+  }
+});
+
+app.post('/api/checkout/complete', requireAuth, async (req, res) => {
+  const { sessionId } = req.body;
+  if (!sessionId) return res.status(400).json({ error: 'Missing session ID' });
+
+  try {
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    if (!stripeKey) return res.status(500).json({ error: 'Payment system not configured' });
+    const stripe = require('stripe')(stripeKey);
+
+    const checkoutSession = await stripe.checkout.sessions.retrieve(sessionId);
+    if (checkoutSession.payment_status !== 'paid') {
+      return res.status(400).json({ error: 'Payment not completed' });
+    }
+
+    const existingOrder = await pool.query('SELECT id, order_number FROM orders WHERE stripe_session_id = $1', [sessionId]);
+    if (existingOrder.rows.length > 0) {
+      return res.json({ order: existingOrder.rows[0] });
+    }
+
+    const meta = checkoutSession.metadata;
+    const userId = parseInt(meta.userId);
+    if (userId !== req.session.userId) {
+      return res.status(403).json({ error: 'Session mismatch' });
+    }
+
+    const cartItems = JSON.parse(meta.cart);
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      const validatedCart = [];
+      for (const item of cartItems) {
+        const product = await client.query('SELECT id, stock, price, name, image_url, is_active FROM products WHERE id = $1 FOR UPDATE', [item.id]);
+        if (product.rows.length === 0 || !product.rows[0].is_active) {
+          await client.query('ROLLBACK');
+          return res.status(400).json({ error: `Product is no longer available` });
+        }
+        if (product.rows[0].stock < item.qty) {
+          await client.query('ROLLBACK');
+          return res.status(400).json({ error: `"${product.rows[0].name}" only has ${product.rows[0].stock} in stock` });
+        }
+        validatedCart.push({
+          id: product.rows[0].id,
+          name: product.rows[0].name,
+          price: parseFloat(product.rows[0].price),
+          image_url: product.rows[0].image_url,
+          qty: parseInt(item.qty)
+        });
+      }
+
+      const subtotal = validatedCart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      const shippingCost = 15.00;
+      const total = subtotal + shippingCost;
+      const orderNumber = 'DM-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+
+      const orderResult = await client.query(
+        `INSERT INTO orders (user_id, order_number, subtotal, shipping_cost, total,
+          shipping_first_name, shipping_last_name, shipping_address, shipping_city,
+          shipping_state, shipping_zip, shipping_country, stripe_session_id, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'processing') RETURNING *`,
+        [userId, orderNumber, subtotal, shippingCost, total,
+          meta.shippingFirstName, meta.shippingLastName, meta.shippingAddress, meta.shippingCity,
+          meta.shippingState, meta.shippingZip, meta.shippingCountry, sessionId]
+      );
+
+      for (const item of validatedCart) {
+        await client.query(
+          `INSERT INTO order_items (order_id, product_id, product_name, product_image, quantity, price_at_purchase)
+           VALUES ($1, $2, $3, $4, $5, $6)`,
+          [orderResult.rows[0].id, item.id, item.name, item.image_url, item.qty, item.price]
+        );
+        await client.query(
+          'UPDATE products SET stock = stock - $1, updated_at = NOW() WHERE id = $2',
+          [item.qty, item.id]
+        );
+      }
+
+      await client.query('COMMIT');
+      res.json({ order: orderResult.rows[0] });
+    } catch (err) {
+      await client.query('ROLLBACK');
+      res.status(500).json({ error: 'Failed to create order' });
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Failed to verify payment' });
   }
 });
 

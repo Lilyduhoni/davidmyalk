@@ -78,6 +78,10 @@ api/checkout.js        - Original Netlify function (reference only)
 - `GET /api/user/addresses` - List addresses
 - `POST /api/user/addresses` - Add address
 
+### Checkout (Stripe)
+- `POST /api/checkout` - Create Stripe Checkout session (validates stock, redirects to Stripe)
+- `POST /api/checkout/complete` - Verify Stripe payment and create order (called on return from Stripe)
+
 ### Admin
 - `GET /api/admin/stats` - Dashboard stats (includes monthly revenue, pending orders, low stock, new users)
 - `GET /api/admin/users` - List all users

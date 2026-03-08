@@ -45,6 +45,7 @@ async function initDatabase() {
         shipping_zip VARCHAR(20),
         shipping_country VARCHAR(100) DEFAULT 'US',
         tracking_number VARCHAR(255),
+        stripe_session_id VARCHAR(255),
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       );
@@ -100,6 +101,15 @@ async function initDatabase() {
       await client.query(`ALTER TABLE order_items RENAME COLUMN product_price TO price_at_purchase`);
       await client.query(`ALTER TABLE order_items RENAME COLUMN image_url TO product_image`);
       console.log('Migrated order_items columns');
+    }
+
+    const stripeColCheck = await client.query(`
+      SELECT column_name FROM information_schema.columns
+      WHERE table_name = 'orders' AND column_name = 'stripe_session_id'
+    `);
+    if (stripeColCheck.rows.length === 0) {
+      await client.query(`ALTER TABLE orders ADD COLUMN stripe_session_id VARCHAR(255)`);
+      console.log('Added stripe_session_id column');
     }
 
     console.log('Database tables initialized');

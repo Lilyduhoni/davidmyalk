@@ -355,7 +355,7 @@
                         <span>TOTAL</span>
                         <span id="checkout-total" class="text-red">$0.00</span>
                     </div>
-                    <button onclick="placeOrder()" class="btn btn-primary btn-full mt-6" id="place-order-btn" style="font-size:16px;">PLACE ORDER</button>
+                    <button onclick="placeOrder()" class="btn btn-primary btn-full mt-6" id="place-order-btn" style="font-size:16px;">PAY WITH STRIPE</button>
                     <button onclick="goToCheckoutStep(1)" class="btn btn-secondary btn-full mt-4" style="font-size:13px;">BACK TO SHIPPING</button>
                 </div>
 
@@ -577,6 +577,7 @@
             updateCartUI();
             initScrollAnimations();
             initMobileFilters();
+            handleCheckoutReturn();
         }
 
         function initMobileFilters() {
@@ -901,7 +902,7 @@
         async function placeOrder() {
             const btn = document.getElementById('place-order-btn');
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading-spinner"></span> PLACING ORDER...';
+            btn.innerHTML = '<span class="loading-spinner"></span> REDIRECTING TO PAYMENT...';
 
             const shipping = {
                 firstName: document.getElementById('ship-fname').value,
@@ -914,32 +915,64 @@
             };
 
             try {
-                const res = await fetch('/api/orders', {
+                const res = await fetch('/api/checkout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ cart, shipping })
                 });
                 const data = await res.json();
                 if (!res.ok) {
-                    showToast(data.error || 'Failed to place order', 'error');
+                    showToast(data.error || 'Checkout failed', 'error');
                     btn.disabled = false;
-                    btn.textContent = 'PLACE ORDER';
+                    btn.textContent = 'PAY WITH STRIPE';
                     return;
                 }
-                document.getElementById('confirmed-order-number').textContent = data.order.order_number;
-                cart = [];
-                saveCart();
-                updateCartUI();
-                goToCheckoutStep(3);
-
-                const prodRes = await fetch('/api/products');
-                products = await prodRes.json();
-                renderCategoryFilters();
-                renderProducts();
+                window.location.href = data.url;
             } catch (err) {
                 showToast('Something went wrong', 'error');
                 btn.disabled = false;
-                btn.textContent = 'PLACE ORDER';
+                btn.textContent = 'PAY WITH STRIPE';
+            }
+        }
+
+        async function handleCheckoutReturn() {
+            const params = new URLSearchParams(window.location.search);
+            const checkoutStatus = params.get('checkout');
+            const sessionId = params.get('session_id');
+
+            if (checkoutStatus === 'cancelled') {
+                showToast('Payment was cancelled', 'error');
+                window.history.replaceState({}, '', '/');
+                return;
+            }
+
+            if (checkoutStatus === 'success' && sessionId) {
+                try {
+                    const res = await fetch('/api/checkout/complete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ sessionId })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.order) {
+                        cart = [];
+                        saveCart();
+                        updateCartUI();
+                        document.getElementById('confirmed-order-number').textContent = data.order.order_number;
+                        document.getElementById('checkout-modal').style.display = 'flex';
+                        goToCheckoutStep(3);
+
+                        const prodRes = await fetch('/api/products');
+                        products = await prodRes.json();
+                        renderCategoryFilters();
+                        renderProducts();
+                    } else {
+                        showToast(data.error || 'Failed to confirm order', 'error');
+                    }
+                } catch (err) {
+                    showToast('Failed to confirm order', 'error');
+                }
+                window.history.replaceState({}, '', '/');
             }
         }
 
