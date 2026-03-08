@@ -542,7 +542,7 @@
         let activeSort = 'default';
         let activeAvailability = 'all';
         let activePriceRange = 'all';
-        const SHIPPING_COST = 15.00;
+        let SHIPPING_COST = 15.00;
 
         function saveCart() {
             localStorage.setItem('dm-cart', JSON.stringify(cart));
@@ -571,6 +571,12 @@
             renderNav(currentUser, { isStore: true });
             renderFooter();
             document.getElementById('cart-btn').addEventListener('click', toggleCart);
+
+            try {
+                const shipRes = await fetch('/api/settings/shipping');
+                const shipData = await shipRes.json();
+                SHIPPING_COST = shipData.shippingCost;
+            } catch(e) {}
 
             renderCategoryFilters();
             renderProducts();

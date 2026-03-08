@@ -210,6 +210,10 @@
                 <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 Users
             </a>
+            <a href="#" class="sidebar-link" onclick="showSection('settings')">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Settings
+            </a>
         </div>
 
         <div class="main-content">
@@ -346,6 +350,25 @@
                     </table>
                 </div>
             </div>
+
+            <div id="settings-section" style="display:none;">
+                <div class="admin-header">
+                    <div>
+                        <h2 class="admin-title">STORE <span class="text-red">SETTINGS</span></h2>
+                        <p class="admin-subtitle">Configure shipping and store options</p>
+                    </div>
+                </div>
+                <div class="card" style="max-width:500px;">
+                    <h3 style="font-size:16px;margin-bottom:16px;font-family:var(--font-display);">SHIPPING <span class="text-red">COST</span></h3>
+                    <p class="text-muted font-mono text-xs" style="margin-bottom:16px;">Flat-rate shipping applied to every order at checkout. Set to 0 for free shipping.</p>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <span style="font-size:20px;font-weight:700;">$</span>
+                        <input type="number" step="0.01" min="0" class="input-field" id="settings-shipping-cost" style="max-width:150px;font-size:18px;text-align:center;">
+                        <button class="btn btn-primary" onclick="saveShippingCost()">SAVE</button>
+                    </div>
+                    <div id="shipping-save-status" class="font-mono text-xs text-muted" style="margin-top:10px;"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -435,7 +458,7 @@
         let categories = [];
         let imageMode = 'upload';
         let uploadedImageUrl = '';
-        const sections = ['overview', 'products', 'orders', 'users'];
+        const sections = ['overview', 'products', 'orders', 'users', 'settings'];
 
         async function init() {
             const res = await fetch('/api/auth/me');
@@ -459,7 +482,36 @@
         }
 
         async function loadAll() {
-            await Promise.all([loadStats(), loadOrders(), loadProducts(), loadUsers(), loadCategories()]);
+            await Promise.all([loadStats(), loadOrders(), loadProducts(), loadUsers(), loadCategories(), loadSettings()]);
+        }
+
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/settings/shipping');
+                const data = await res.json();
+                document.getElementById('settings-shipping-cost').value = data.shippingCost.toFixed(2);
+            } catch(e) {}
+        }
+
+        async function saveShippingCost() {
+            const val = parseFloat(document.getElementById('settings-shipping-cost').value);
+            if (isNaN(val) || val < 0) { showToast('Invalid shipping cost', 'error'); return; }
+            try {
+                const res = await fetch('/api/admin/settings/shipping', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ shippingCost: val })
+                });
+                if (res.ok) {
+                    showToast('Shipping cost updated');
+                    document.getElementById('shipping-save-status').textContent = 'Saved: $' + val.toFixed(2);
+                } else {
+                    const data = await res.json();
+                    showToast(data.error || 'Failed to save', 'error');
+                }
+            } catch (err) {
+                showToast('Failed to save', 'error');
+            }
         }
 
         function showSection(name) {
@@ -570,7 +622,10 @@
                 <td class="font-mono">$${parseFloat(o.total).toFixed(2)}</td>
                 <td><span class="badge badge-${o.status}">${o.status}</span></td>
                 <td class="font-mono text-xs">${new Date(o.created_at).toLocaleDateString()}</td>
-                <td><button class="btn btn-secondary btn-sm" onclick="viewOrder(${o.id})">VIEW</button></td>
+                <td>
+                    <button class="btn btn-secondary btn-sm" onclick="viewOrder(${o.id})">VIEW</button>
+                    <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px;" onclick="deleteOrder(${o.id}, '${o.order_number}')">DELETE</button>
+                </td>
             </tr>`).join('') || '<tr><td colspan="7" class="text-muted font-mono text-xs" style="text-align:center;padding:40px;">No orders found</td></tr>';
         }
 
@@ -806,6 +861,23 @@
             else showToast('Failed', 'error');
         }
 
+        async function deleteOrder(id, orderNumber) {
+            if (!confirm(`Delete order ${orderNumber}? This will permanently remove it from the system and the customer's order history.`)) return;
+            try {
+                const res = await fetch(`/api/admin/orders/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast('Order deleted');
+                    loadOrders();
+                    loadStats();
+                } else {
+                    showToast(data.error || 'Failed to delete order', 'error');
+                }
+            } catch (err) {
+                showToast('Failed to delete order', 'error');
+            }
+        }
+
         async function viewOrder(id) {
             const o = allOrders.find(ord => ord.id === id);
             if (!o) return;
@@ -859,6 +931,9 @@
                         <input type="text" class="input-field" id="order-tracking" placeholder="Tracking Number" value="${o.tracking_number||''}" style="max-width:250px;">
                         <button class="btn btn-primary btn-sm" onclick="updateOrderStatus(${o.id})">UPDATE</button>
                     </div>
+                </div>
+                <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+                    <button class="btn btn-sm" style="background:var(--red);color:#fff;" onclick="deleteOrder(${o.id}, '${o.order_number}'); closeOrderModal();">DELETE ORDER</button>
                 </div>
             `;
             document.getElementById('order-modal').classList.add('open');

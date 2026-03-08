@@ -82,6 +82,10 @@ api/checkout.js        - Original Netlify function (reference only)
 - `POST /api/checkout` - Create Stripe Checkout session (validates stock, redirects to Stripe)
 - `POST /api/checkout/complete` - Verify Stripe payment and create order (called on return from Stripe)
 
+### Settings
+- `GET /api/settings/shipping` - Get current shipping cost (public)
+- `PUT /api/admin/settings/shipping` - Update shipping cost (admin only)
+
 ### Admin
 - `GET /api/admin/stats` - Dashboard stats (includes monthly revenue, pending orders, low stock, new users)
 - `GET /api/admin/users` - List all users

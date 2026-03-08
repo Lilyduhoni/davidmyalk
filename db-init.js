@@ -91,6 +91,12 @@ async function initDatabase() {
       );
 
       CREATE INDEX IF NOT EXISTS idx_session_expire ON session(expire);
+
+      CREATE TABLE IF NOT EXISTS site_settings (
+        key VARCHAR(100) PRIMARY KEY,
+        value TEXT NOT NULL
+      );
+      INSERT INTO site_settings (key, value) VALUES ('shipping_cost', '15.00') ON CONFLICT (key) DO NOTHING;
     `);
 
     const colCheck = await client.query(`

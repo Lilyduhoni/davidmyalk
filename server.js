@@ -244,7 +244,8 @@ app.post('/api/orders', requireAuth, async (req, res) => {
     }
 
     const subtotal = validatedCart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const shippingCost = 15.00;
+    const shippingSetting = await client.query("SELECT value FROM site_settings WHERE key = 'shipping_cost'");
+    const shippingCost = shippingSetting.rows.length > 0 ? parseFloat(shippingSetting.rows[0].value) : 15.00;
     const total = subtotal + shippingCost;
     const orderNumber = 'DM-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
 
@@ -521,6 +522,39 @@ app.put('/api/admin/orders/:id/status', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/settings/shipping', async (req, res) => {
+  try {
+    const result = await pool.query("SELECT value FROM site_settings WHERE key = 'shipping_cost'");
+    const cost = result.rows.length > 0 ? parseFloat(result.rows[0].value) : 15.00;
+    res.json({ shippingCost: cost });
+  } catch (err) {
+    res.json({ shippingCost: 15.00 });
+  }
+});
+
+app.put('/api/admin/settings/shipping', requireAdmin, async (req, res) => {
+  const { shippingCost } = req.body;
+  const cost = parseFloat(shippingCost);
+  if (isNaN(cost) || cost < 0) return res.status(400).json({ error: 'Invalid shipping cost' });
+  try {
+    await pool.query("INSERT INTO site_settings (key, value) VALUES ('shipping_cost', $1) ON CONFLICT (key) DO UPDATE SET value = $1", [cost.toFixed(2)]);
+    res.json({ shippingCost: cost });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.delete('/api/admin/orders/:id', requireAdmin, async (req, res) => {
+  try {
+    const order = await pool.query('SELECT id FROM orders WHERE id = $1', [req.params.id]);
+    if (order.rows.length === 0) return res.status(404).json({ error: 'Order not found' });
+    await pool.query('DELETE FROM orders WHERE id = $1', [req.params.id]);
+    res.json({ message: 'Order deleted' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 app.post('/api/admin/upload', requireAdmin, (req, res) => {
   upload.single('image')(req, res, (err) => {
     if (err) {
@@ -662,14 +696,19 @@ app.post('/api/checkout', requireAuth, async (req, res) => {
       quantity: item.qty,
     }));
 
-    lineItems.push({
-      price_data: {
-        currency: 'usd',
-        product_data: { name: 'Shipping' },
-        unit_amount: 1500,
-      },
-      quantity: 1,
-    });
+    const shippingSetting = await pool.query("SELECT value FROM site_settings WHERE key = 'shipping_cost'");
+    const shippingCostVal = shippingSetting.rows.length > 0 ? parseFloat(shippingSetting.rows[0].value) : 15.00;
+
+    if (shippingCostVal > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: { name: 'Shipping' },
+          unit_amount: Math.round(shippingCostVal * 100),
+        },
+        quantity: 1,
+      });
+    }
 
     const host = req.headers.host;
     const protocol = req.headers['x-forwarded-proto'] || req.protocol;
@@ -750,7 +789,8 @@ app.post('/api/checkout/complete', requireAuth, async (req, res) => {
       }
 
       const subtotal = validatedCart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-      const shippingCost = 15.00;
+      const shippingSetting = await client.query("SELECT value FROM site_settings WHERE key = 'shipping_cost'");
+      const shippingCost = shippingSetting.rows.length > 0 ? parseFloat(shippingSetting.rows[0].value) : 15.00;
       const total = subtotal + shippingCost;
       const orderNumber = 'DM-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
 
