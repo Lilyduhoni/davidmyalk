@@ -62,7 +62,16 @@
                 </div>
                 <div style="margin-bottom:20px;">
                     <label class="input-label">PASSWORD</label>
-                    <input type="password" class="input-field" id="password" required placeholder="Min. 6 characters" minlength="6" autocomplete="new-password">
+                    <input type="password" class="input-field" id="password" required placeholder="Min. 6 characters" minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value)">
+                    <div id="pw-strength" style="margin-top:8px;display:none;">
+                        <div style="display:flex;gap:4px;margin-bottom:4px;">
+                            <div id="pw-bar-1" style="flex:1;height:3px;background:rgba(255,255,255,0.1);transition:background 0.3s;"></div>
+                            <div id="pw-bar-2" style="flex:1;height:3px;background:rgba(255,255,255,0.1);transition:background 0.3s;"></div>
+                            <div id="pw-bar-3" style="flex:1;height:3px;background:rgba(255,255,255,0.1);transition:background 0.3s;"></div>
+                            <div id="pw-bar-4" style="flex:1;height:3px;background:rgba(255,255,255,0.1);transition:background 0.3s;"></div>
+                        </div>
+                        <span id="pw-label" style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;"></span>
+                    </div>
                 </div>
                 <div style="margin-bottom:24px;">
                     <label class="input-label">CONFIRM PASSWORD</label>
@@ -88,6 +97,28 @@
             renderNav(user);
             renderFooter();
         })();
+
+        function checkPasswordStrength(pw) {
+            const container = document.getElementById('pw-strength');
+            if (!pw) { container.style.display = 'none'; return; }
+            container.style.display = 'block';
+            let score = 0;
+            if (pw.length >= 6) score++;
+            if (pw.length >= 10) score++;
+            if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+            if (/[0-9]/.test(pw)) score++;
+            if (/[^A-Za-z0-9]/.test(pw)) score++;
+            score = Math.min(score, 4);
+            const colors = ['#ef4444', '#f97316', '#eab308', '#22c55e'];
+            const labels = ['WEAK', 'FAIR', 'GOOD', 'STRONG'];
+            const level = Math.max(score - 1, 0);
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById('pw-bar-' + i).style.background = i <= score ? colors[level] : 'rgba(255,255,255,0.1)';
+            }
+            const label = document.getElementById('pw-label');
+            label.textContent = labels[level];
+            label.style.color = colors[level];
+        }
 
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();

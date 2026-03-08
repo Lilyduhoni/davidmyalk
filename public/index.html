@@ -544,8 +544,18 @@
         let activePriceRange = 'all';
         const SHIPPING_COST = 15.00;
 
+        function saveCart() {
+            localStorage.setItem('dm-cart', JSON.stringify(cart));
+        }
+        function loadCart() {
+            try {
+                const saved = localStorage.getItem('dm-cart');
+                if (saved) cart = JSON.parse(saved);
+            } catch (e) { cart = []; }
+        }
+
         async function init() {
-            localStorage.removeItem('dm-cart');
+            loadCart();
 
             const [prodRes, authRes] = await Promise.all([
                 fetch('/api/products'),
@@ -554,6 +564,9 @@
             products = await prodRes.json();
             const authData = await authRes.json();
             currentUser = authData.user;
+
+            cart = cart.filter(item => products.some(p => p.id === item.id && p.is_active));
+            saveCart();
 
             renderNav(currentUser, { isStore: true });
             renderFooter();
@@ -764,6 +777,7 @@
             } else {
                 cart.push({ id: product.id, name: product.name, price: parseFloat(product.price), image_url: product.image_url, qty: 1 });
             }
+            saveCart();
             updateCartUI();
             showToast(`${product.name} added to cart`, 'success');
             if (!document.getElementById('cart-sidebar').classList.contains('open')) toggleCart();
@@ -771,6 +785,7 @@
 
         function removeFromCart(id) {
             cart = cart.filter(i => i.id !== id);
+            saveCart();
             updateCartUI();
         }
 
@@ -784,6 +799,7 @@
                 showToast(`Only ${product.stock} available`, 'error');
                 item.qty = product.stock;
             }
+            saveCart();
             updateCartUI();
         }
 
@@ -912,6 +928,7 @@
                 }
                 document.getElementById('confirmed-order-number').textContent = data.order.order_number;
                 cart = [];
+                saveCart();
                 updateCartUI();
                 goToCheckoutStep(3);
 
