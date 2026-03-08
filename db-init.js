@@ -46,6 +46,7 @@ async function initDatabase() {
         shipping_country VARCHAR(100) DEFAULT 'US',
         tracking_number VARCHAR(255),
         stripe_session_id VARCHAR(255),
+        stock_restored BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       );
@@ -116,6 +117,16 @@ async function initDatabase() {
     if (stripeColCheck.rows.length === 0) {
       await client.query(`ALTER TABLE orders ADD COLUMN stripe_session_id VARCHAR(255)`);
       console.log('Added stripe_session_id column');
+    }
+
+    const stockRestoredCheck = await client.query(`
+      SELECT column_name FROM information_schema.columns
+      WHERE table_name = 'orders' AND column_name = 'stock_restored'
+    `);
+    if (stockRestoredCheck.rows.length === 0) {
+      await client.query(`ALTER TABLE orders ADD COLUMN stock_restored BOOLEAN DEFAULT FALSE`);
+      await client.query(`UPDATE orders SET stock_restored = TRUE WHERE status = 'cancelled'`);
+      console.log('Added stock_restored column');
     }
 
     console.log('Database tables initialized');

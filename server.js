@@ -506,20 +506,22 @@ app.put('/api/admin/orders/:id/status', requireAdmin, async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const currentOrder = await client.query('SELECT id, status FROM orders WHERE id = $1', [req.params.id]);
+    const currentOrder = await client.query('SELECT id, status, stock_restored FROM orders WHERE id = $1', [req.params.id]);
     if (currentOrder.rows.length === 0) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Order not found' }); }
     const oldStatus = currentOrder.rows[0].status;
+    const isStockRestored = currentOrder.rows[0].stock_restored;
 
-    if (status === 'cancelled' && oldStatus !== 'cancelled') {
+    if (status === 'cancelled' && !isStockRestored) {
       const items = await client.query('SELECT product_id, quantity FROM order_items WHERE order_id = $1', [req.params.id]);
       for (const item of items.rows) {
         if (item.product_id) {
           await client.query('UPDATE products SET stock = stock + $1, updated_at = NOW() WHERE id = $2', [item.quantity, item.product_id]);
         }
       }
+      await client.query('UPDATE orders SET stock_restored = TRUE WHERE id = $1', [req.params.id]);
     }
 
-    if (oldStatus === 'cancelled' && status !== 'cancelled') {
+    if (oldStatus === 'cancelled' && status !== 'cancelled' && isStockRestored) {
       const items = await client.query('SELECT product_id, quantity FROM order_items WHERE order_id = $1', [req.params.id]);
       for (const item of items.rows) {
         if (item.product_id) {
@@ -531,6 +533,7 @@ app.put('/api/admin/orders/:id/status', requireAdmin, async (req, res) => {
           await client.query('UPDATE products SET stock = stock - $1, updated_at = NOW() WHERE id = $2', [item.quantity, item.product_id]);
         }
       }
+      await client.query('UPDATE orders SET stock_restored = FALSE WHERE id = $1', [req.params.id]);
     }
 
     const updates = ['status = $1', 'updated_at = NOW()'];
@@ -667,9 +670,9 @@ app.delete('/api/admin/orders/:id', requireAdmin, async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const order = await client.query('SELECT id, status FROM orders WHERE id = $1', [req.params.id]);
+    const order = await client.query('SELECT id, status, stock_restored FROM orders WHERE id = $1', [req.params.id]);
     if (order.rows.length === 0) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Order not found' }); }
-    if (order.rows[0].status !== 'cancelled') {
+    if (!order.rows[0].stock_restored) {
       const items = await client.query('SELECT product_id, quantity FROM order_items WHERE order_id = $1', [req.params.id]);
       for (const item of items.rows) {
         if (item.product_id) {
