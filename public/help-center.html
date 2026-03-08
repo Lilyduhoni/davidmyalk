@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
     <style>
-        .info-page { padding-top: 80px; min-height: 100vh; background: var(--navy); }
+        .info-page { padding-top: 65px; min-height: 100vh; background: var(--navy); }
         .info-hero {
             padding: 80px 16px 60px; text-align: center;
             background: var(--navy-light); border-bottom: 1px solid var(--border);
@@ -35,38 +35,19 @@
             color: var(--text-muted); line-height: 1.8;
         }
         .faq-a.open { display: block; }
-        .info-nav {
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 50;
-            background: rgba(5,8,16,0.95); backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border); padding: 16px 24px;
-        }
-        .info-nav-inner {
-            max-width: 1200px; margin: 0 auto; display: flex;
-            justify-content: space-between; align-items: center;
-        }
-        .back-link {
-            display: flex; align-items: center; gap: 8px;
-            font-family: var(--font-mono); font-size: 11px;
-            text-transform: uppercase; letter-spacing: 0.1em;
-            color: var(--text-muted); transition: color 0.3s;
-        }
-        .back-link:hover { color: var(--primary); }
         .contact-box {
             background: var(--navy-light); border: 1px solid var(--border);
             padding: 40px; text-align: center; margin-top: 48px;
         }
+        @media (max-width: 480px) {
+            .info-content { padding: 40px 16px; }
+            .faq-q { font-size: 14px; padding: 16px; }
+            .faq-a { padding: 0 16px 16px; font-size: 12px; }
+        }
     </style>
 </head>
 <body>
-    <nav class="info-nav">
-        <div class="info-nav-inner">
-            <a href="/" class="nav-brand">DAVID <span>MYALIK</span></a>
-            <a href="/" class="back-link">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-                Back to Store
-            </a>
-        </div>
-    </nav>
+    <div id="site-nav"></div>
 
     <div class="info-page">
         <div class="info-hero">
@@ -88,7 +69,7 @@
                     How do I track my order?
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
-                <div class="faq-a">Once your order ships, you'll receive a tracking number. Log in to your account and go to your Dashboard to view your orders and tracking information. You can also see the current status of each order (pending, processing, shipped, delivered).</div>
+                <div class="faq-a">Once your order ships, you'll receive a tracking number. Log in to your account and go to your Dashboard to view your orders and tracking information.</div>
             </div>
 
             <div class="faq-item">
@@ -147,7 +128,16 @@
         </div>
     </div>
 
+    <div id="site-footer"></div>
+
+    <script src="/js/components.js"></script>
     <script>
+        (async () => {
+            const user = await checkAuth();
+            renderNav(user);
+            renderFooter();
+        })();
+
         function toggleFaq(el) {
             const answer = el.nextElementSibling;
             const isOpen = el.classList.contains('open');

@@ -9,36 +9,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
     <style>
-        .info-page { padding-top: 80px; min-height: 100vh; background: var(--navy); }
+        .info-page { padding-top: 65px; min-height: 100vh; background: var(--navy); }
         .info-hero {
             padding: 80px 16px 60px; text-align: center;
             background: var(--navy-light); border-bottom: 1px solid var(--border);
         }
         .info-hero h1 { font-size: clamp(40px, 6vw, 72px); margin-bottom: 12px; }
         .info-content { max-width: 800px; margin: 0 auto; padding: 60px 24px; }
-        .info-nav {
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 50;
-            background: rgba(5,8,16,0.95); backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border); padding: 16px 24px;
-        }
-        .info-nav-inner {
-            max-width: 1200px; margin: 0 auto; display: flex;
-            justify-content: space-between; align-items: center;
-        }
-        .back-link {
-            display: flex; align-items: center; gap: 8px;
-            font-family: var(--font-mono); font-size: 11px;
-            text-transform: uppercase; letter-spacing: 0.1em;
-            color: var(--text-muted); transition: color 0.3s;
-        }
-        .back-link:hover { color: var(--primary); }
         .info-card {
             background: var(--navy-card); border: 1px solid var(--border);
             padding: 32px; margin-bottom: 24px;
         }
-        .info-card h3 {
-            font-size: 22px; margin-bottom: 16px;
-        }
+        .info-card h3 { font-size: 22px; margin-bottom: 16px; }
         .info-card p, .info-card li {
             font-family: var(--font-mono); font-size: 13px;
             color: var(--text-muted); line-height: 1.8;
@@ -46,9 +28,7 @@
         .info-card ul { list-style: none; padding: 0; }
         .info-card li { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .info-card li:last-child { border-bottom: none; }
-        .shipping-table {
-            width: 100%; border-collapse: collapse; margin-top: 16px;
-        }
+        .shipping-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
         .shipping-table th {
             font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
             letter-spacing: 0.1em; color: var(--text-muted); padding: 12px 16px;
@@ -58,18 +38,15 @@
             padding: 14px 16px; font-family: var(--font-mono); font-size: 13px;
             color: var(--text-muted); border-bottom: 1px solid rgba(255,255,255,0.03);
         }
+        @media (max-width: 480px) {
+            .info-content { padding: 40px 16px; }
+            .info-card { padding: 20px; }
+            .shipping-table th, .shipping-table td { padding: 10px 8px; font-size: 11px; }
+        }
     </style>
 </head>
 <body>
-    <nav class="info-nav">
-        <div class="info-nav-inner">
-            <a href="/" class="nav-brand">DAVID <span>MYALIK</span></a>
-            <a href="/" class="back-link">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-                Back to Store
-            </a>
-        </div>
-    </nav>
+    <div id="site-nav"></div>
 
     <div class="info-page">
         <div class="info-hero">
@@ -85,48 +62,25 @@
 
             <div class="info-card">
                 <h3>SHIPPING <span class="text-red">RATES</span></h3>
-                <table class="shipping-table">
-                    <thead>
-                        <tr>
-                            <th>Destination</th>
-                            <th>Method</th>
-                            <th>Est. Time</th>
-                            <th>Cost</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>United States</td>
-                            <td>Standard</td>
-                            <td>5-7 business days</td>
-                            <td>$15.00</td>
-                        </tr>
-                        <tr>
-                            <td>United States</td>
-                            <td>Express</td>
-                            <td>2-3 business days</td>
-                            <td>$25.00</td>
-                        </tr>
-                        <tr>
-                            <td>Canada</td>
-                            <td>Standard</td>
-                            <td>7-14 business days</td>
-                            <td>$20.00</td>
-                        </tr>
-                        <tr>
-                            <td>United Kingdom</td>
-                            <td>Standard</td>
-                            <td>10-18 business days</td>
-                            <td>$25.00</td>
-                        </tr>
-                        <tr>
-                            <td>Australia</td>
-                            <td>Standard</td>
-                            <td>12-20 business days</td>
-                            <td>$30.00</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table class="shipping-table">
+                        <thead>
+                            <tr>
+                                <th>Destination</th>
+                                <th>Method</th>
+                                <th>Est. Time</th>
+                                <th>Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>United States</td><td>Standard</td><td>5-7 business days</td><td>$15.00</td></tr>
+                            <tr><td>United States</td><td>Express</td><td>2-3 business days</td><td>$25.00</td></tr>
+                            <tr><td>Canada</td><td>Standard</td><td>7-14 business days</td><td>$20.00</td></tr>
+                            <tr><td>United Kingdom</td><td>Standard</td><td>10-18 business days</td><td>$25.00</td></tr>
+                            <tr><td>Australia</td><td>Standard</td><td>12-20 business days</td><td>$30.00</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="info-card">
@@ -138,7 +92,7 @@
                 <h3>IMPORTANT <span class="text-red">NOTES</span></h3>
                 <ul>
                     <li>We are not responsible for delays caused by customs, weather, or carrier issues.</li>
-                    <li>Please ensure your shipping address is correct before placing your order. We cannot redirect packages once shipped.</li>
+                    <li>Please ensure your shipping address is correct before placing your order.</li>
                     <li>International orders may be subject to customs duties and taxes, which are the buyer's responsibility.</li>
                     <li>PO Boxes are accepted for US standard shipping only.</li>
                 </ul>
@@ -150,5 +104,16 @@
             </div>
         </div>
     </div>
+
+    <div id="site-footer"></div>
+
+    <script src="/js/components.js"></script>
+    <script>
+        (async () => {
+            const user = await checkAuth();
+            renderNav(user);
+            renderFooter();
+        })();
+    </script>
 </body>
 </html>

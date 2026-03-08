@@ -86,36 +86,74 @@
             margin-top: 20px; font-size: 16px; color: var(--primary);
             text-transform: uppercase; letter-spacing: 0.5em;
         }
-        @keyframes pulse { 0% { opacity: 0.7; } 100% { opacity: 1; } }
 
-        .shop-section { padding: 100px 16px; background: var(--navy); }
-        .shop-inner { max-width: 1200px; margin: 0 auto; }
-        .shop-header {
-            display: flex; flex-wrap: wrap; justify-content: space-between;
-            align-items: flex-end; margin-bottom: 48px; gap: 24px;
-        }
-        .shop-title { font-size: clamp(48px, 8vw, 96px); margin-bottom: 8px; }
+        .shop-section { padding: 80px 16px; background: var(--navy); }
+        .shop-outer { max-width: 1280px; margin: 0 auto; }
+        .shop-header { margin-bottom: 40px; }
+        .shop-title { font-size: clamp(48px, 8vw, 80px); margin-bottom: 8px; }
 
-        .category-tabs {
-            display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 40px;
+        .shop-layout { display: flex; gap: 32px; }
+
+        .shop-sidebar {
+            width: 240px; flex-shrink: 0; position: sticky; top: 85px; align-self: flex-start;
+            max-height: calc(100vh - 100px); overflow-y: auto;
         }
-        .cat-tab {
-            font-family: var(--font-mono); font-size: 11px; text-transform: uppercase;
-            letter-spacing: 0.1em; padding: 10px 20px; border: 1px solid var(--border);
-            background: transparent; color: var(--text-muted); cursor: pointer;
-            transition: all 0.3s;
+        .filter-section { margin-bottom: 24px; }
+        .filter-title {
+            font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+            letter-spacing: 0.15em; color: var(--primary); margin-bottom: 12px;
+            padding-bottom: 8px; border-bottom: 1px solid var(--border);
+            cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            user-select: none;
         }
-        .cat-tab:hover { border-color: rgba(255,255,255,0.2); color: white; }
-        .cat-tab.active {
-            background: var(--primary); border-color: var(--primary); color: white;
+        .filter-title svg { transition: transform 0.3s; }
+        .filter-title.collapsed svg { transform: rotate(-90deg); }
+        .filter-body { overflow: hidden; transition: max-height 0.3s; }
+        .filter-body.collapsed { max-height: 0 !important; }
+        .filter-item {
+            display: flex; align-items: center; gap: 10px; padding: 8px 0;
+            font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);
+            cursor: pointer; transition: color 0.2s;
         }
+        .filter-item:hover { color: white; }
+        .filter-item.active { color: white; }
+        .filter-radio {
+            width: 14px; height: 14px; border: 1px solid var(--border);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: border-color 0.2s;
+        }
+        .filter-item.active .filter-radio {
+            border-color: var(--primary);
+        }
+        .filter-item.active .filter-radio::after {
+            content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--primary);
+        }
+        .filter-count {
+            margin-left: auto; font-size: 10px; color: rgba(255,255,255,0.2);
+        }
+        .sort-select {
+            width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            color: white; padding: 10px 12px; font-family: var(--font-mono); font-size: 11px;
+            outline: none; cursor: pointer; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 12px center;
+        }
+        .sort-select option { background: var(--navy-light); color: white; }
+        .sort-select:focus { border-color: var(--primary); }
+        .clear-filters {
+            font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+            letter-spacing: 0.1em; color: var(--text-muted); cursor: pointer;
+            transition: color 0.2s; background: none; border: none; padding: 8px 0;
+        }
+        .clear-filters:hover { color: var(--primary); }
+
+        .shop-main { flex: 1; min-width: 0; }
         .product-count {
             font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
-            margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.1em;
+            margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.1em;
         }
-
         .product-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 28px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px;
         }
         .product-img-wrap {
             position: relative; aspect-ratio: 4/5; overflow: hidden;
@@ -134,9 +172,9 @@
             align-items: center; justify-content: center;
         }
         .product-card:hover .product-overlay { opacity: 1; }
-        .product-info { margin-top: 16px; }
-        .product-name { font-size: 18px; letter-spacing: -0.01em; font-weight: 700; }
-        .product-price { font-family: var(--font-mono); color: var(--primary); font-size: 16px; margin-top: 4px; }
+        .product-info { margin-top: 14px; }
+        .product-name { font-size: 16px; letter-spacing: -0.01em; font-weight: 700; }
+        .product-price { font-family: var(--font-mono); color: var(--primary); font-size: 15px; margin-top: 4px; }
         .product-category-tag {
             font-family: var(--font-mono); font-size: 9px; text-transform: uppercase;
             letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 4px;
@@ -150,10 +188,23 @@
             color: var(--primary); letter-spacing: 0.1em;
         }
 
+        .mobile-filter-toggle {
+            display: none; align-items: center; gap: 8px; padding: 12px 16px;
+            background: var(--navy-light); border: 1px solid var(--border);
+            color: white; font-family: var(--font-mono); font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer;
+            margin-bottom: 20px; width: 100%;
+        }
+        .mobile-filter-backdrop {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+            z-index: 55;
+        }
+        .mobile-filter-backdrop.open { display: block; }
+
         .about-section { padding: 100px 16px; background: var(--navy-light); }
         .about-inner {
             max-width: 1200px; margin: 0 auto; display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 64px; align-items: center;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 48px; align-items: center;
         }
         .about-img-wrap { position: relative; }
         .about-img-frame {
@@ -187,81 +238,34 @@
         .contact-inner { max-width: 600px; margin: 0 auto; text-align: center; position: relative; z-index: 2; }
         .contact-title { font-size: clamp(40px, 6vw, 64px); margin-bottom: 12px; }
 
-        .site-footer {
-            padding: 64px 16px 32px; border-top: 1px solid var(--border); background: var(--navy-light);
+        @media (max-width: 900px) {
+            .shop-sidebar {
+                position: fixed; top: 0; left: 0; bottom: 0; width: 280px;
+                background: var(--navy-light); z-index: 56; padding: 80px 20px 20px;
+                transform: translateX(-100%); transition: transform 0.3s ease;
+                overflow-y: auto; border-right: 1px solid var(--border);
+                max-height: none;
+            }
+            .shop-sidebar.open { transform: translateX(0); }
+            .mobile-filter-toggle { display: flex; }
+            .shop-layout { display: block; }
+            .product-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
         }
-        .footer-inner { max-width: 1200px; margin: 0 auto; }
-        .footer-top {
-            display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px;
-            padding-bottom: 48px; border-bottom: 1px solid var(--border);
-        }
-        .footer-brand { font-size: 32px; font-family: var(--font-display); font-style: italic; margin-bottom: 16px; }
-        .footer-desc { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); line-height: 1.8; max-width: 300px; }
-        .footer-col-title {
-            font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
-            letter-spacing: 0.15em; color: var(--primary); margin-bottom: 20px;
-        }
-        .footer-link {
-            display: block; font-family: var(--font-mono); font-size: 12px;
-            color: var(--text-muted); margin-bottom: 12px; transition: color 0.3s;
-        }
-        .footer-link:hover { color: white; }
-        .footer-bottom {
-            display: flex; justify-content: space-between; align-items: center;
-            padding-top: 32px; flex-wrap: wrap; gap: 16px;
-        }
-        .footer-copy { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-muted); }
-        .footer-socials { display: flex; gap: 16px; }
-        .footer-social {
-            width: 36px; height: 36px; border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--text-muted); transition: all 0.3s;
-        }
-        .footer-social:hover { border-color: var(--primary); color: var(--primary); }
 
-        @media (max-width: 768px) {
-            .hero-title { font-size: 20vw !important; }
-            .about-inner { grid-template-columns: 1fr; }
-            .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
-            .category-tabs { gap: 6px; }
-            .cat-tab { padding: 8px 14px; font-size: 10px; }
-        }
         @media (max-width: 480px) {
-            .footer-top { grid-template-columns: 1fr; }
-            .product-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+            .hero-title { font-size: 20vw !important; }
+            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .product-name { font-size: 13px; }
+            .product-price { font-size: 13px; }
+            .about-inner { grid-template-columns: 1fr; }
+            .hero-sub { font-size: 12px; letter-spacing: 0.3em; }
         }
     </style>
 </head>
 <body>
 
     <div class="gritty-overlay"></div>
-
-    <nav class="nav-auth">
-        <div class="nav-auth-inner">
-            <a href="#home" class="nav-brand">DAVID <span>MYALIK</span></a>
-            <div class="nav-links" id="nav-desktop">
-                <a href="#shop" class="nav-link">SHOP</a>
-                <a href="#about" class="nav-link">ABOUT</a>
-                <a href="#contact" class="nav-link">CONTACT</a>
-                <div id="auth-links"></div>
-                <button id="cart-btn" style="position:relative;background:none;border:none;color:white;cursor:pointer;" aria-label="Cart">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                    <span id="cart-count" style="position:absolute;top:-8px;right:-8px;background:var(--primary);font-size:9px;font-weight:900;padding:2px 6px;border-radius:50%;font-family:var(--font-mono);display:none;">0</span>
-                </button>
-            </div>
-            <button id="mobile-menu-btn" style="display:none;background:none;border:none;color:white;cursor:pointer;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-            </button>
-        </div>
-    </nav>
-
-    <div id="mobile-menu" style="position:fixed;inset:0;z-index:60;background:rgba(5,8,16,0.98);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;transform:translateY(-100%);transition:transform 0.4s ease;">
-        <button id="close-menu-btn" style="position:absolute;top:24px;right:24px;background:none;border:none;color:white;font-size:24px;cursor:pointer;">✕</button>
-        <a href="#shop" class="mobile-link" style="font-size:48px;font-family:var(--font-display);text-transform:uppercase;">Shop</a>
-        <a href="#about" class="mobile-link" style="font-size:48px;font-family:var(--font-display);text-transform:uppercase;">About</a>
-        <a href="#contact" class="mobile-link" style="font-size:48px;font-family:var(--font-display);text-transform:uppercase;">Contact</a>
-        <div id="mobile-auth-links" style="display:flex;gap:16px;margin-top:16px;"></div>
-    </div>
+    <div id="site-nav"></div>
 
     <div id="cart-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:70;display:none;transition:opacity 0.3s;opacity:0;" onclick="toggleCart()"></div>
     <div id="cart-sidebar" class="cart-sidebar" style="position:fixed;top:0;right:0;height:100%;width:100%;max-width:450px;background:var(--navy-light);z-index:80;display:flex;flex-direction:column;border-left:1px solid var(--border);">
@@ -283,7 +287,7 @@
     </div>
 
     <div id="checkout-modal" style="position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center;padding:16px;">
-        <div style="background:var(--navy-light);width:100%;max-width:640px;border:1px solid var(--border);position:relative;overflow:hidden;">
+        <div style="background:var(--navy-light);width:100%;max-width:640px;border:1px solid var(--border);position:relative;overflow:hidden;max-height:95vh;overflow-y:auto;">
             <div style="display:flex;justify-content:space-between;padding:24px 32px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);">
                 <div style="display:flex;flex-direction:column;align-items:center;">
                     <div class="step-ind active" id="step-1-ind" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:12px;">1</div>
@@ -345,7 +349,7 @@
                     <h2 style="font-size:36px;margin-bottom:12px;">ORDER <span style="color:#22c55e;">CONFIRMED</span></h2>
                     <p class="font-mono text-muted" style="margin-bottom:8px;">Your gear is being prepared.</p>
                     <p class="font-mono" style="font-size:14px;margin-bottom:32px;" id="confirmed-order-number"></p>
-                    <div style="display:flex;gap:12px;justify-content:center;">
+                    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
                         <a href="/dashboard" class="btn btn-secondary btn-sm">VIEW ORDERS</a>
                         <button onclick="closeCheckout()" class="btn btn-primary btn-sm">CONTINUE SHOPPING</button>
                     </div>
@@ -372,20 +376,105 @@
     </section>
 
     <section id="shop" class="shop-section">
-        <div class="shop-inner">
+        <div class="shop-outer">
             <div class="reveal shop-header">
-                <div>
-                    <h2 class="shop-title">THE <span class="text-red">SHOP</span></h2>
-                    <p class="font-mono text-muted" style="font-size:12px;text-transform:uppercase;letter-spacing:0.3em;">Drift Culture Merch & Apparel</p>
-                </div>
+                <h2 class="shop-title">THE <span class="text-red">SHOP</span></h2>
+                <p class="font-mono text-muted" style="font-size:12px;text-transform:uppercase;letter-spacing:0.3em;">Drift Culture Merch & Apparel</p>
             </div>
 
-            <div id="category-tabs" class="category-tabs reveal"></div>
-            <div id="product-count" class="product-count reveal"></div>
-            <div id="product-grid" class="product-grid"></div>
-            <div id="no-products" style="display:none;text-align:center;padding:80px 0;">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" style="margin-bottom:20px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                <p class="font-mono text-muted" style="font-size:14px;">No products found in this category.</p>
+            <button class="mobile-filter-toggle" id="mobile-filter-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+                FILTERS & SORTING
+            </button>
+            <div class="mobile-filter-backdrop" id="mobile-filter-backdrop"></div>
+
+            <div class="shop-layout">
+                <div class="shop-sidebar" id="shop-sidebar">
+                    <div class="filter-section">
+                        <div class="filter-title" onclick="toggleFilterSection(this)">
+                            Sort By
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                        <div class="filter-body">
+                            <select class="sort-select" id="sort-select" onchange="applyFilters()">
+                                <option value="default">Default</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="name-az">Name: A to Z</option>
+                                <option value="name-za">Name: Z to A</option>
+                                <option value="newest">Newest First</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <div class="filter-title" onclick="toggleFilterSection(this)">
+                            Categories
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                        <div class="filter-body" id="category-filters"></div>
+                    </div>
+
+                    <div class="filter-section">
+                        <div class="filter-title" onclick="toggleFilterSection(this)">
+                            Availability
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                        <div class="filter-body" id="availability-filters">
+                            <div class="filter-item active" onclick="setAvailability('all')">
+                                <span class="filter-radio"></span>
+                                All Items
+                            </div>
+                            <div class="filter-item" onclick="setAvailability('in-stock')">
+                                <span class="filter-radio"></span>
+                                In Stock Only
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <div class="filter-title" onclick="toggleFilterSection(this)">
+                            Price Range
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                        <div class="filter-body" id="price-filters">
+                            <div class="filter-item active" onclick="setPriceRange('all')">
+                                <span class="filter-radio"></span>
+                                All Prices
+                            </div>
+                            <div class="filter-item" onclick="setPriceRange('under-25')">
+                                <span class="filter-radio"></span>
+                                Under $25
+                            </div>
+                            <div class="filter-item" onclick="setPriceRange('25-50')">
+                                <span class="filter-radio"></span>
+                                $25 - $50
+                            </div>
+                            <div class="filter-item" onclick="setPriceRange('50-100')">
+                                <span class="filter-radio"></span>
+                                $50 - $100
+                            </div>
+                            <div class="filter-item" onclick="setPriceRange('over-100')">
+                                <span class="filter-radio"></span>
+                                Over $100
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="clear-filters" onclick="clearAllFilters()">
+                        ✕ Clear All Filters
+                    </button>
+                </div>
+
+                <div class="shop-main">
+                    <div id="product-count" class="product-count"></div>
+                    <div id="product-grid" class="product-grid"></div>
+                    <div id="no-products" style="display:none;text-align:center;padding:80px 0;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" style="margin-bottom:20px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        <p class="font-mono text-muted" style="font-size:14px;">No products match your filters.</p>
+                        <button onclick="clearAllFilters()" class="btn btn-secondary btn-sm" style="margin-top:16px;">Clear Filters</button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -424,47 +513,18 @@
         </div>
     </section>
 
-    <footer class="site-footer">
-        <div class="footer-inner">
-            <div class="footer-top">
-                <div>
-                    <div class="footer-brand">DAVID <span class="text-red">MYALIK</span></div>
-                    <p class="footer-desc">Drift culture apparel for those who live life sideways. Born from the smoke, built for the streets.</p>
-                </div>
-                <div>
-                    <div class="footer-col-title">Company</div>
-                    <a href="#about" class="footer-link">About Us</a>
-                    <a href="#contact" class="footer-link">Contact</a>
-                    <a href="https://www.youtube.com/@davidmyalik" target="_blank" class="footer-link">YouTube</a>
-                </div>
-                <div>
-                    <div class="footer-col-title">Support</div>
-                    <a href="/help-center" class="footer-link">Help Center</a>
-                    <a href="/shipping-info" class="footer-link">Shipping Info</a>
-                    <a href="/returns" class="footer-link">Returns & Exchanges</a>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p class="footer-copy">&copy; 2026 Sideways Always. All Rights Reserved.</p>
-                <div class="footer-socials">
-                    <a href="https://www.youtube.com/@davidmyalik" target="_blank" class="footer-social" aria-label="YouTube">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="var(--navy-light)"/></svg>
-                    </a>
-                    <a href="https://instagram.com/davidmyalik" target="_blank" class="footer-social" aria-label="Instagram">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
+    <div id="site-footer"></div>
     <div class="toast-container" id="toast-container"></div>
 
+    <script src="/js/components.js"></script>
     <script>
         let products = [];
         let cart = [];
         let currentUser = null;
         let activeCategory = 'all';
+        let activeSort = 'default';
+        let activeAvailability = 'all';
+        let activePriceRange = 'all';
         const SHIPPING_COST = 15.00;
 
         async function init() {
@@ -478,74 +538,133 @@
             const authData = await authRes.json();
             currentUser = authData.user;
 
-            renderAuthLinks();
-            renderCategoryTabs();
+            renderNav(currentUser, { isStore: true });
+            renderFooter();
+            document.getElementById('cart-btn').addEventListener('click', toggleCart);
+
+            renderCategoryFilters();
             renderProducts();
             updateCartUI();
             initScrollAnimations();
+            initMobileFilters();
         }
 
-        function renderAuthLinks() {
-            const desktopAuth = document.getElementById('auth-links');
-            const mobileAuth = document.getElementById('mobile-auth-links');
+        function initMobileFilters() {
+            const btn = document.getElementById('mobile-filter-btn');
+            const sidebar = document.getElementById('shop-sidebar');
+            const backdrop = document.getElementById('mobile-filter-backdrop');
 
-            if (currentUser) {
-                const dashLink = (currentUser.role === 'admin' || currentUser.role === 'owner') ? '/admin' : '/dashboard';
-                desktopAuth.innerHTML = `
-                    <a href="${dashLink}" class="nav-link">${currentUser.role === 'admin' || currentUser.role === 'owner' ? 'ADMIN' : 'DASHBOARD'}</a>
-                    <a href="#" class="nav-link" onclick="logout()" style="color:#ef4444;">LOGOUT</a>
-                `;
-                mobileAuth.innerHTML = `
-                    <a href="${dashLink}" class="mobile-link" style="font-size:24px;font-family:var(--font-display);text-transform:uppercase;">Dashboard</a>
-                `;
-            } else {
-                desktopAuth.innerHTML = `
-                    <a href="/login" class="nav-link">LOGIN</a>
-                    <a href="/signup" class="btn btn-primary btn-sm" style="padding:8px 20px;font-size:11px;">SIGN UP</a>
-                `;
-                mobileAuth.innerHTML = `
-                    <a href="/login" class="mobile-link" style="font-size:24px;font-family:var(--font-display);text-transform:uppercase;">Login</a>
-                    <a href="/signup" class="mobile-link" style="font-size:24px;font-family:var(--font-display);text-transform:uppercase;color:var(--primary);">Sign Up</a>
-                `;
-            }
+            btn.addEventListener('click', () => {
+                sidebar.classList.add('open');
+                backdrop.classList.add('open');
+            });
+            backdrop.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                backdrop.classList.remove('open');
+            });
+        }
+
+        function toggleFilterSection(el) {
+            el.classList.toggle('collapsed');
+            el.nextElementSibling.classList.toggle('collapsed');
         }
 
         function getCategories() {
-            const cats = new Set();
+            const cats = {};
             products.forEach(p => {
-                if (p.category && p.category.trim()) cats.add(p.category.trim().toLowerCase());
+                if (p.category && p.category.trim()) {
+                    const key = p.category.trim().toLowerCase();
+                    cats[key] = (cats[key] || 0) + 1;
+                }
             });
-            return Array.from(cats).sort();
+            return Object.entries(cats).sort((a, b) => a[0].localeCompare(b[0]));
         }
 
-        function renderCategoryTabs() {
-            const container = document.getElementById('category-tabs');
+        function renderCategoryFilters() {
+            const container = document.getElementById('category-filters');
             const categories = getCategories();
-
-            if (categories.length <= 1 && products.length > 0) {
-                container.style.display = 'none';
-                return;
-            }
-
-            let html = `<button class="cat-tab ${activeCategory === 'all' ? 'active' : ''}" onclick="filterCategory('all')">All</button>`;
-            categories.forEach(cat => {
+            let html = `<div class="filter-item ${activeCategory === 'all' ? 'active' : ''}" onclick="setCategory('all')">
+                <span class="filter-radio"></span>All<span class="filter-count">${products.length}</span>
+            </div>`;
+            categories.forEach(([cat, count]) => {
                 const label = cat.charAt(0).toUpperCase() + cat.slice(1);
-                html += `<button class="cat-tab ${activeCategory === cat ? 'active' : ''}" onclick="filterCategory('${cat}')">${label}</button>`;
+                html += `<div class="filter-item ${activeCategory === cat ? 'active' : ''}" onclick="setCategory('${cat}')">
+                    <span class="filter-radio"></span>${label}<span class="filter-count">${count}</span>
+                </div>`;
             });
             container.innerHTML = html;
-            container.style.display = categories.length > 0 ? 'flex' : 'none';
         }
 
-        function filterCategory(cat) {
-            activeCategory = cat;
-            renderCategoryTabs();
+        function closeMobileFilters() {
+            document.getElementById('shop-sidebar').classList.remove('open');
+            document.getElementById('mobile-filter-backdrop').classList.remove('open');
+        }
+
+        function setCategory(cat) { activeCategory = cat; applyFilters(); closeMobileFilters(); }
+        function setAvailability(val) { activeAvailability = val; applyFilters(); closeMobileFilters(); }
+        function setPriceRange(val) { activePriceRange = val; applyFilters(); closeMobileFilters(); }
+
+        function clearAllFilters() {
+            activeCategory = 'all';
+            activeSort = 'default';
+            activeAvailability = 'all';
+            activePriceRange = 'all';
+            document.getElementById('sort-select').value = 'default';
+            applyFilters();
+        }
+
+        function applyFilters() {
+            activeSort = document.getElementById('sort-select').value;
+            renderCategoryFilters();
+            updateAvailabilityUI();
+            updatePriceUI();
             renderProducts();
             initScrollAnimations();
         }
 
+        function updateAvailabilityUI() {
+            document.querySelectorAll('#availability-filters .filter-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            const items = document.querySelectorAll('#availability-filters .filter-item');
+            if (activeAvailability === 'all') items[0].classList.add('active');
+            else items[1].classList.add('active');
+        }
+
+        function updatePriceUI() {
+            document.querySelectorAll('#price-filters .filter-item').forEach(el => el.classList.remove('active'));
+            const map = { 'all': 0, 'under-25': 1, '25-50': 2, '50-100': 3, 'over-100': 4 };
+            const items = document.querySelectorAll('#price-filters .filter-item');
+            if (items[map[activePriceRange]]) items[map[activePriceRange]].classList.add('active');
+        }
+
         function getFilteredProducts() {
-            if (activeCategory === 'all') return products;
-            return products.filter(p => p.category && p.category.trim().toLowerCase() === activeCategory);
+            let filtered = [...products];
+
+            if (activeCategory !== 'all') {
+                filtered = filtered.filter(p => p.category && p.category.trim().toLowerCase() === activeCategory);
+            }
+            if (activeAvailability === 'in-stock') {
+                filtered = filtered.filter(p => p.stock > 0);
+            }
+            if (activePriceRange !== 'all') {
+                const price = parseFloat;
+                switch (activePriceRange) {
+                    case 'under-25': filtered = filtered.filter(p => price(p.price) < 25); break;
+                    case '25-50': filtered = filtered.filter(p => price(p.price) >= 25 && price(p.price) <= 50); break;
+                    case '50-100': filtered = filtered.filter(p => price(p.price) > 50 && price(p.price) <= 100); break;
+                    case 'over-100': filtered = filtered.filter(p => price(p.price) > 100); break;
+                }
+            }
+
+            switch (activeSort) {
+                case 'price-low': filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price)); break;
+                case 'price-high': filtered.sort((a, b) => parseFloat(b.price) - parseFloat(a.price)); break;
+                case 'name-az': filtered.sort((a, b) => a.name.localeCompare(b.name)); break;
+                case 'name-za': filtered.sort((a, b) => b.name.localeCompare(a.name)); break;
+                case 'newest': filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); break;
+            }
+            return filtered;
         }
 
         function renderProducts() {
@@ -576,10 +695,10 @@
                 return `
                 <div class="product-card reveal" style="position:relative;">
                     <div class="product-img-wrap">
-                        <img src="${p.image_url}" alt="${p.name}">
+                        <img src="${p.image_url}" alt="${p.name}" loading="lazy">
                         ${isOutOfStock ? '<div class="sold-out-overlay"><span class="sold-out-label">SOLD OUT</span></div>' : `
                         <div class="product-overlay">
-                            <button onclick="addToCart(${p.id})" class="btn btn-primary">ADD TO CART</button>
+                            <button onclick="addToCart(${p.id})" class="btn btn-primary btn-sm">ADD TO CART</button>
                         </div>`}
                     </div>
                     <div class="product-info">
@@ -587,7 +706,6 @@
                         <h3 class="product-name">${p.name}</h3>
                         <p class="product-price">$${parseFloat(p.price).toFixed(2)}</p>
                         ${stockHTML}
-                        ${p.description ? `<p class="text-muted" style="font-size:12px;margin-top:8px;line-height:1.5;">${p.description.substring(0, 80)}${p.description.length > 80 ? '...' : ''}</p>` : ''}
                     </div>
                 </div>`;
             }).join('');
@@ -615,8 +733,6 @@
                 sidebar.classList.add('open');
             }
         }
-
-        document.getElementById('cart-btn').addEventListener('click', toggleCart);
 
         function addToCart(id) {
             const product = products.find(p => p.id === id);
@@ -684,21 +800,21 @@
                 document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
                 container.innerHTML = cart.map(item => `
                     <div style="display:flex;gap:12px;border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:16px;">
-                        <img src="${item.image_url}" style="width:64px;height:64px;object-fit:cover;filter:grayscale(0.5);border:1px solid var(--border);">
-                        <div style="flex:1;">
-                            <h4 style="font-weight:700;text-transform:uppercase;font-size:13px;">${item.name}</h4>
-                            <p class="font-mono text-muted" style="font-size:12px;">$${item.price.toFixed(2)}</p>
+                        <img src="${item.image_url}" style="width:56px;height:56px;object-fit:cover;filter:grayscale(0.5);border:1px solid var(--border);">
+                        <div style="flex:1;min-width:0;">
+                            <h4 style="font-weight:700;text-transform:uppercase;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.name}</h4>
+                            <p class="font-mono text-muted" style="font-size:11px;">$${item.price.toFixed(2)}</p>
                             <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
-                                <button onclick="updateCartQty(${item.id}, -1)" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:white;width:28px;height:28px;cursor:pointer;font-size:14px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">-</button>
-                                <span class="font-mono" style="font-size:13px;min-width:20px;text-align:center;">${item.qty}</span>
-                                <button onclick="updateCartQty(${item.id}, 1)" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:white;width:28px;height:28px;cursor:pointer;font-size:14px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">+</button>
+                                <button onclick="updateCartQty(${item.id}, -1)" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:white;width:26px;height:26px;cursor:pointer;font-size:13px;">-</button>
+                                <span class="font-mono" style="font-size:12px;min-width:18px;text-align:center;">${item.qty}</span>
+                                <button onclick="updateCartQty(${item.id}, 1)" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:white;width:26px;height:26px;cursor:pointer;font-size:13px;">+</button>
                             </div>
                         </div>
                         <div style="display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;">
-                            <button onclick="removeFromCart(${item.id})" style="background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
+                            <button onclick="removeFromCart(${item.id})" style="background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                             </button>
-                            <span class="font-mono text-red" style="font-size:13px;font-weight:600;">$${(item.price * item.qty).toFixed(2)}</span>
+                            <span class="font-mono text-red" style="font-size:12px;font-weight:600;">$${(item.price * item.qty).toFixed(2)}</span>
                         </div>
                     </div>
                 `).join('');
@@ -741,7 +857,7 @@
                     ${cart.map(item => `
                         <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
                             <img src="${item.image_url}" style="width:40px;height:40px;object-fit:cover;filter:grayscale(.5);border:1px solid var(--border);">
-                            <div style="flex:1;"><span class="text-sm">${item.name}</span></div>
+                            <div style="flex:1;min-width:0;"><span class="text-sm" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;">${item.name}</span></div>
                             <span class="font-mono text-xs text-muted">x${item.qty}</span>
                             <span class="font-mono text-sm">$${(item.price * item.qty).toFixed(2)}</span>
                         </div>
@@ -788,7 +904,7 @@
 
                 const prodRes = await fetch('/api/products');
                 products = await prodRes.json();
-                renderCategoryTabs();
+                renderCategoryFilters();
                 renderProducts();
             } catch (err) {
                 showToast('Something went wrong', 'error');
@@ -798,28 +914,8 @@
         }
 
         async function logout() {
-            await fetch('/api/auth/logout', { method: 'POST' });
-            currentUser = null;
-            renderAuthLinks();
-            showToast('Logged out', 'info');
+            await doLogout();
         }
-
-        function showToast(msg, type) {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.textContent = msg;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
-        }
-
-        const menuBtn = document.getElementById('mobile-menu-btn');
-        const closeMenuBtn = document.getElementById('close-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        menuBtn.addEventListener('click', () => mobileMenu.style.transform = 'translateY(0)');
-        function closeMobileMenu() { mobileMenu.style.transform = 'translateY(-100%)'; }
-        closeMenuBtn.addEventListener('click', closeMobileMenu);
-        document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', closeMobileMenu));
 
         init();
     </script>

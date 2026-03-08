@@ -15,24 +15,11 @@
                         radial-gradient(ellipse at 80% 20%, rgba(0,240,255,0.03) 0%, transparent 50%),
                         var(--navy);
         }
-        .back-home {
-            position: absolute; top: 20px; left: 20px;
-            display: flex; align-items: center; gap: 8px;
-            color: var(--text-muted); font-family: var(--font-mono); font-size: 11px;
-            text-transform: uppercase; letter-spacing: 0.1em; transition: color 0.3s;
-        }
-        .back-home:hover { color: var(--primary); }
-        .back-home svg { transition: transform 0.3s; }
-        .back-home:hover svg { transform: translateX(-3px); }
     </style>
 </head>
 <body>
     <div class="auth-bg"></div>
-
-    <a href="/" class="back-home">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        Back to Store
-    </a>
+    <div id="site-nav"></div>
 
     <div class="auth-page">
         <div class="auth-card">
@@ -67,7 +54,16 @@
         </div>
     </div>
 
+    <div id="site-footer"></div>
+
+    <script src="/js/components.js"></script>
     <script>
+        (async () => {
+            const user = await checkAuth();
+            renderNav(user);
+            renderFooter();
+        })();
+
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');

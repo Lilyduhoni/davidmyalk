@@ -23,6 +23,7 @@ public/
   help-center.html     - Help Center / FAQ page
   shipping-info.html   - Shipping information page
   returns.html         - Returns & exchanges policy page
+  js/components.js   - Shared nav/footer/auth/toast components
   css/styles.css       - Shared stylesheet
 api/checkout.js        - Original Netlify function (reference only)
 ```
@@ -46,8 +47,11 @@ api/checkout.js        - Original Netlify function (reference only)
 - Tracking number support on orders
 - Cart starts empty each page load (no localStorage persistence)
 - Cart badge hidden when empty, shown with count when items added
-- Auth pages (login, signup, forgot-password) have "Back to Store" navigation
-- Category filter tabs in shop section (filter by hats, keychains, stickers, etc.)
+- Shared components.js: renderNav(), renderFooter(), checkAuth(), showToast(), doLogout()
+- All public pages (login, signup, forgot-password, info pages) use shared nav/footer components
+- Dashboard and Admin have their own inline navigation (not using shared components.js)
+- Shop section: left sidebar with Sort By, Categories, Availability, Price Range filters
+- Mobile shop: sidebar slides in from left via toggle button (shown at <=900px)
 - Multi-column footer with Company and Support columns (YouTube, Instagram social icons)
 - Dedicated pages: Help Center (FAQ), Shipping Info, Returns & Exchanges
 - Server-side price validation on orders (prevents price tampering)

@@ -111,11 +111,25 @@ textarea.input-field { resize: vertical; min-height: 100px; font-family: var(--f
   font-family: var(--font-display); font-size: 14px; color: white;
 }
 
+.mobile-menu-toggle {
+  display: none; background: none; border: none; color: white; cursor: pointer;
+}
+.mobile-menu-overlay {
+  position: fixed; inset: 0; z-index: 60; background: rgba(5,8,16,0.98);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+  transform: translateY(-100%); transition: transform 0.4s ease;
+}
+.mobile-menu-overlay.open { transform: translateY(0); }
+.mobile-close-btn {
+  position: absolute; top: 24px; right: 24px; background: none; border: none;
+  color: white; font-size: 24px; cursor: pointer;
+}
+
 .page-content { padding-top: 80px; min-height: 100vh; }
 
 .auth-page {
-  display: flex; align-items: center; justify-content: center; min-height: 100vh;
-  padding: 20px;
+  display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 65px);
+  padding: 20px; padding-top: 80px;
 }
 .auth-card {
   background: var(--navy-light); border: 1px solid var(--border);
@@ -176,7 +190,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .toast {
   background: var(--navy-card); border: 1px solid var(--border); padding: 14px 20px;
   font-family: var(--font-mono); font-size: 13px; display: flex; align-items: center; gap: 10px;
-  animation: slideIn 0.3s ease; min-width: 280px;
+  animation: slideIn 0.3s ease; min-width: 280px; max-width: 90vw;
 }
 .toast-success { border-left: 3px solid #22c55e; }
 .toast-error { border-left: 3px solid #ef4444; }
@@ -193,6 +207,38 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 }
 .empty-state svg { margin: 0 auto 20px; opacity: 0.3; }
 .empty-state p { font-family: var(--font-mono); font-size: 14px; }
+
+.site-footer {
+  padding: 64px 16px 32px; border-top: 1px solid var(--border); background: var(--navy-light);
+}
+.footer-inner { max-width: 1200px; margin: 0 auto; }
+.footer-top {
+  display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px;
+  padding-bottom: 48px; border-bottom: 1px solid var(--border);
+}
+.footer-brand { font-size: 32px; font-family: var(--font-display); font-style: italic; margin-bottom: 16px; }
+.footer-desc { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); line-height: 1.8; max-width: 300px; }
+.footer-col-title {
+  font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.15em; color: var(--primary); margin-bottom: 20px;
+}
+.footer-link {
+  display: block; font-family: var(--font-mono); font-size: 12px;
+  color: var(--text-muted); margin-bottom: 12px; transition: color 0.3s;
+}
+.footer-link:hover { color: white; }
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 32px; flex-wrap: wrap; gap: 16px;
+}
+.footer-copy { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-muted); }
+.footer-socials { display: flex; gap: 16px; }
+.footer-social {
+  width: 36px; height: 36px; border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); transition: all 0.3s;
+}
+.footer-social:hover { border-color: var(--primary); color: var(--primary); }
 
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -231,13 +277,16 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 
 @media (max-width: 768px) {
   .sidebar { display: none; }
-  .main-content { margin-left: 0; }
+  .main-content { margin-left: 0; padding: 16px; }
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-  .nav-links { display: none; }
-  .mobile-menu-btn { display: block; }
+  .nav-links { display: none !important; }
+  .mobile-menu-toggle { display: block; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .toast { min-width: unset; }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 480px) {
+  .footer-top { grid-template-columns: 1fr; }
   .auth-card { padding: 32px 24px; }
   .hide-mobile { display: none; }
 }
