@@ -210,6 +210,10 @@
                 <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 Users
             </a>
+            <a href="#" class="sidebar-link" onclick="showSection('logs')">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                Activity Log
+            </a>
             <a href="#" class="sidebar-link" onclick="showSection('settings')">
                 <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 Settings
@@ -349,6 +353,20 @@
                         <tbody id="users-table"></tbody>
                     </table>
                 </div>
+            </div>
+
+            <div id="logs-section" style="display:none;">
+                <div class="admin-header">
+                    <div>
+                        <h2 class="admin-title">ACTIVITY <span class="text-red">LOG</span></h2>
+                        <p class="admin-subtitle">Track all admin actions across the site</p>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="loadLogs()">REFRESH</button>
+                </div>
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Search logs by admin name, action, details..." id="log-search" oninput="filterLogs()">
+                </div>
+                <div id="logs-list"></div>
             </div>
 
             <div id="settings-section" style="display:none;">
@@ -501,7 +519,7 @@
         let categories = [];
         let imageMode = 'upload';
         let uploadedImageUrl = '';
-        const sections = ['overview', 'products', 'orders', 'users', 'settings'];
+        const sections = ['overview', 'products', 'orders', 'users', 'logs', 'settings'];
 
         async function init() {
             const res = await fetch('/api/auth/me');
@@ -525,7 +543,66 @@
         }
 
         async function loadAll() {
-            await Promise.all([loadStats(), loadOrders(), loadProducts(), loadUsers(), loadCategories(), loadSettings()]);
+            await Promise.all([loadStats(), loadOrders(), loadProducts(), loadUsers(), loadCategories(), loadSettings(), loadLogs()]);
+        }
+
+        let allLogs = [];
+        const ACTION_LABELS = {
+            create_product: { label: 'Created Product', color: '#22c55e', icon: '+' },
+            update_product: { label: 'Updated Product', color: '#3b82f6', icon: '~' },
+            deactivate_product: { label: 'Deactivated Product', color: '#f59e0b', icon: '!' },
+            update_order: { label: 'Updated Order', color: '#3b82f6', icon: '~' },
+            delete_order: { label: 'Deleted Order', color: '#ef4444', icon: 'x' },
+            change_role: { label: 'Changed Role', color: '#a855f7', icon: '~' },
+            edit_user: { label: 'Edited User', color: '#3b82f6', icon: '~' },
+            delete_user: { label: 'Deleted User', color: '#ef4444', icon: 'x' },
+            update_shipping: { label: 'Updated Shipping', color: '#06b6d4', icon: '$' },
+            update_grind: { label: 'Updated Grind Section', color: '#06b6d4', icon: '~' },
+            update_socials: { label: 'Updated Social Links', color: '#06b6d4', icon: '~' }
+        };
+
+        async function loadLogs() {
+            try {
+                const res = await fetch('/api/admin/logs');
+                allLogs = await res.json();
+                renderLogs(allLogs);
+            } catch(e) {}
+        }
+
+        function renderLogs(logs) {
+            if (logs.length === 0) {
+                document.getElementById('logs-list').innerHTML = '<div style="padding:40px;text-align:center;"><span class="font-mono text-xs text-muted">No activity logged yet</span></div>';
+                return;
+            }
+            document.getElementById('logs-list').innerHTML = logs.map(log => {
+                const meta = ACTION_LABELS[log.action] || { label: log.action, color: '#6b7280', icon: '?' };
+                const date = new Date(log.created_at);
+                const timeStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+                return `
+                    <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-bottom:1px solid var(--border);transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                        <div style="width:32px;height:32px;border-radius:8px;background:${meta.color}20;color:${meta.color};display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:900;font-size:14px;flex-shrink:0;">${meta.icon}</div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                <span style="font-size:13px;font-weight:600;">${esc(log.user_name || 'Unknown')}</span>
+                                <span style="font-family:var(--font-mono);font-size:10px;padding:2px 8px;border-radius:4px;background:${meta.color}20;color:${meta.color};text-transform:uppercase;letter-spacing:0.05em;">${meta.label}</span>
+                            </div>
+                            <div class="font-mono text-xs text-muted" style="margin-top:4px;">${esc(log.details)}</div>
+                        </div>
+                        <div class="font-mono text-xs text-muted" style="white-space:nowrap;flex-shrink:0;">${timeStr}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterLogs() {
+            const q = document.getElementById('log-search').value.toLowerCase();
+            const filtered = allLogs.filter(log =>
+                (log.user_name || '').toLowerCase().includes(q) ||
+                (log.action || '').toLowerCase().includes(q) ||
+                (log.details || '').toLowerCase().includes(q)
+            );
+            renderLogs(filtered);
         }
 
         async function loadSettings() {

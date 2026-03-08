@@ -82,6 +82,22 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+async function adminLog(userId, userName, action, details) {
+  try {
+    await pool.query(
+      'INSERT INTO admin_logs (user_id, user_name, action, details) VALUES ($1, $2, $3, $4)',
+      [userId, userName, action, details || null]
+    );
+  } catch(e) {}
+}
+
+async function getAdminName(req) {
+  try {
+    const r = await pool.query('SELECT first_name, last_name FROM users WHERE id = $1', [req.session.userId]);
+    return r.rows.length > 0 ? `${r.rows[0].first_name} ${r.rows[0].last_name}` : 'Unknown';
+  } catch(e) { return 'Unknown'; }
+}
+
 app.get('/api/auth/me', async (req, res) => {
   if (!req.session.userId) return res.json({ user: null });
   try {
@@ -423,6 +439,8 @@ app.put('/api/admin/users/:id/role', requireAdmin, async (req, res) => {
     if (target.rows.length === 0) return res.status(404).json({ error: 'User not found' });
     if (target.rows[0].role === 'owner') return res.status(400).json({ error: 'Cannot change the owner role' });
     await pool.query('UPDATE users SET role = $1, updated_at = NOW() WHERE id = $2', [role, req.params.id]);
+    const name = await getAdminName(req);
+    adminLog(req.session.userId, name, 'change_role', `Changed user #${req.params.id} role to ${role}`);
     res.json({ message: 'Role updated' });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -447,6 +465,8 @@ app.post('/api/admin/products', requireAdmin, async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
       [name, description || '', parseFloat(price), imageUrl || '', category || '', parseInt(stock) || 0]
     );
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'create_product', `Created product "${name}" ($${price})`);
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -464,6 +484,8 @@ app.put('/api/admin/products/:id', requireAdmin, async (req, res) => {
        parseInt(stock) || 0, isActive !== false, req.params.id]
     );
     if (result.rows.length === 0) return res.status(404).json({ error: 'Product not found' });
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'update_product', `Updated product #${req.params.id} "${name}"`);
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -473,6 +495,8 @@ app.put('/api/admin/products/:id', requireAdmin, async (req, res) => {
 app.delete('/api/admin/products/:id', requireAdmin, async (req, res) => {
   try {
     await pool.query('UPDATE products SET is_active = false WHERE id = $1', [req.params.id]);
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'deactivate_product', `Deactivated product #${req.params.id}`);
     res.json({ message: 'Product deactivated' });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -548,6 +572,8 @@ app.put('/api/admin/orders/:id/status', requireAdmin, async (req, res) => {
       values
     );
     await client.query('COMMIT');
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'update_order', `Updated order #${req.params.id} status to ${status}`);
     res.json(result.rows[0]);
   } catch (err) {
     await client.query('ROLLBACK');
@@ -603,6 +629,8 @@ app.put('/api/admin/settings/grind', requireAdmin, async (req, res) => {
         await pool.query("INSERT INTO site_settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2", [key, value]);
       }
     }
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'update_grind', 'Updated grind section content');
     res.json({ message: 'Grind section updated' });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -648,6 +676,8 @@ app.put('/api/admin/settings/socials', requireAdmin, async (req, res) => {
       "INSERT INTO site_settings (key, value) VALUES ('socials', $1) ON CONFLICT (key) DO UPDATE SET value = $1",
       [JSON.stringify(sanitized)]
     );
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'update_socials', 'Updated social media links');
     res.json({ message: 'Social links updated' });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -660,6 +690,8 @@ app.put('/api/admin/settings/shipping', requireAdmin, async (req, res) => {
   if (isNaN(cost) || cost < 0) return res.status(400).json({ error: 'Invalid shipping cost' });
   try {
     await pool.query("INSERT INTO site_settings (key, value) VALUES ('shipping_cost', $1) ON CONFLICT (key) DO UPDATE SET value = $1", [cost.toFixed(2)]);
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'update_shipping', `Changed shipping cost to $${cost.toFixed(2)}`);
     res.json({ shippingCost: cost });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -682,6 +714,8 @@ app.delete('/api/admin/orders/:id', requireAdmin, async (req, res) => {
     }
     await client.query('DELETE FROM orders WHERE id = $1', [req.params.id]);
     await client.query('COMMIT');
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'delete_order', `Deleted order #${req.params.id}`);
     res.json({ message: 'Order deleted and stock restored' });
   } catch (err) {
     await client.query('ROLLBACK');
@@ -708,6 +742,17 @@ app.post('/api/admin/upload', requireAdmin, (req, res) => {
     }
     res.json({ url: `/uploads/${req.file.filename}` });
   });
+});
+
+app.get('/api/admin/logs', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM admin_logs ORDER BY created_at DESC LIMIT 200'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 app.get('/api/admin/categories', requireAdmin, async (req, res) => {
@@ -748,6 +793,8 @@ app.put('/api/admin/users/:id', requireAdmin, async (req, res) => {
     updates.push('updated_at = NOW()');
     values.push(req.params.id);
     await pool.query(`UPDATE users SET ${updates.join(', ')} WHERE id = $${idx}`, values);
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'edit_user', `Edited user #${req.params.id}`);
     res.json({ message: 'User updated successfully' });
   } catch (err) {
     if (err.code === '23505') return res.status(400).json({ error: 'Email already in use' });
@@ -767,6 +814,8 @@ app.delete('/api/admin/users/:id', requireAdmin, async (req, res) => {
     }
     await pool.query('DELETE FROM addresses WHERE user_id = $1', [req.params.id]);
     await pool.query('DELETE FROM users WHERE id = $1', [req.params.id]);
+    const aName = await getAdminName(req);
+    adminLog(req.session.userId, aName, 'delete_user', `Deleted user #${req.params.id}`);
     res.json({ message: 'User deleted' });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });

@@ -93,6 +93,15 @@ async function initDatabase() {
 
       CREATE INDEX IF NOT EXISTS idx_session_expire ON session(expire);
 
+      CREATE TABLE IF NOT EXISTS admin_logs (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id),
+        user_name VARCHAR(200),
+        action VARCHAR(100) NOT NULL,
+        details TEXT,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+
       CREATE TABLE IF NOT EXISTS site_settings (
         key VARCHAR(100) PRIMARY KEY,
         value TEXT NOT NULL

@@ -35,6 +35,7 @@ api/checkout.js        - Original Netlify function (reference only)
 - `order_items` - Individual items in each order
 - `addresses` - Saved shipping addresses
 - `password_reset_tokens` - Password reset tokens
+- `admin_logs` - Admin activity log (user_id, user_name, action, details, created_at)
 - `session` - Express session store
 
 ## Key Features
@@ -109,6 +110,8 @@ api/checkout.js        - Original Netlify function (reference only)
 - `PUT /api/admin/orders/:id/status` - Update order status/tracking
 - `POST /api/admin/upload` - Upload product image (multer, max 10MB, stored in public/uploads/)
 - `GET /api/admin/categories` - Get all categories (DB + defaults: T-Shirts, Hoodies, Hats, etc.)
+- `DELETE /api/admin/orders/:id` - Delete order (restores stock if not already restored)
+- `GET /api/admin/logs` - Get admin activity logs (last 200 entries)
 
 ## Environment Variables (for Vercel/Neon deployment)
 - `DATABASE_URL` - PostgreSQL connection string (Neon)
