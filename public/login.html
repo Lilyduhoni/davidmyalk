@@ -8,8 +8,32 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .auth-bg {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(ellipse at 20% 50%, rgba(255,0,0,0.06) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 20%, rgba(0,240,255,0.03) 0%, transparent 50%),
+                        var(--navy);
+        }
+        .back-home {
+            position: absolute; top: 20px; left: 20px;
+            display: flex; align-items: center; gap: 8px;
+            color: var(--text-muted); font-family: var(--font-mono); font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.1em; transition: color 0.3s;
+        }
+        .back-home:hover { color: var(--primary); }
+        .back-home svg { transition: transform 0.3s; }
+        .back-home:hover svg { transform: translateX(-3px); }
+    </style>
 </head>
 <body>
+    <div class="auth-bg"></div>
+
+    <a href="/" class="back-home">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to Store
+    </a>
+
     <div class="auth-page">
         <div class="auth-card">
             <div style="text-align:center; margin-bottom: 40px;">
@@ -22,11 +46,11 @@
             <form id="login-form">
                 <div style="margin-bottom:20px;">
                     <label class="input-label">EMAIL</label>
-                    <input type="email" class="input-field" id="email" required placeholder="you@example.com">
+                    <input type="email" class="input-field" id="email" required placeholder="you@example.com" autocomplete="email">
                 </div>
                 <div style="margin-bottom:24px;">
                     <label class="input-label">PASSWORD</label>
-                    <input type="password" class="input-field" id="password" required placeholder="Enter your password">
+                    <input type="password" class="input-field" id="password" required placeholder="Enter your password" autocomplete="current-password">
                 </div>
                 <button type="submit" class="btn btn-primary btn-full" id="submit-btn">LOGIN</button>
             </form>
