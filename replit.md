@@ -41,6 +41,11 @@ api/checkout.js        - Original Netlify function (reference only)
 - Shows "SOLD OUT" when stock reaches 0
 - Order status tracking (pending, processing, shipped, delivered, cancelled)
 - Tracking number support on orders
+- Cart starts empty each page load (no localStorage persistence)
+- Cart badge hidden when empty, shown with count when items added
+- Auth pages (login, signup, forgot-password) have "Back to Store" navigation
+- Scrolling marquee banner, feature strip, multi-column footer with social links
+- Server-side price validation on orders (prevents price tampering)
 
 ## API Endpoints
 ### Auth

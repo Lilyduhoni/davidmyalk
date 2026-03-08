@@ -14,7 +14,7 @@
         .glitch-text::before, .glitch-text::after {
             content: attr(data-text);
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--navy);
+            background: transparent;
         }
         .glitch-text::before {
             left: 2px; text-shadow: -2px 0 #ff0000;
@@ -38,9 +38,7 @@
         }
 
         .product-card { transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
-        .product-card:hover { transform: translateY(-10px); }
-        .product-card img { transition: transform 0.7s cubic-bezier(0.165, 0.84, 0.44, 1); }
-        .product-card:hover img { transform: scale(1.05); }
+        .product-card:hover { transform: translateY(-8px); }
 
         .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
@@ -61,17 +59,182 @@
         .stock-badge.low { background: rgba(234,179,8,0.15); color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
         .stock-badge.out { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
 
-        .hero-gradient {
-            background: linear-gradient(135deg, rgba(255,0,0,0.05) 0%, transparent 50%, rgba(0,240,255,0.03) 100%);
-        }
-
         .section-divider {
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(255,0,0,0.3), transparent);
         }
 
+        .marquee-wrap {
+            overflow: hidden; white-space: nowrap; padding: 16px 0;
+            background: var(--primary); position: relative;
+        }
+        .marquee-track {
+            display: inline-block; animation: marquee 20s linear infinite;
+        }
+        .marquee-track span {
+            font-family: var(--font-display); font-size: 14px; text-transform: uppercase;
+            letter-spacing: 0.2em; color: white; padding: 0 40px;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .hero-section {
+            position: relative; min-height: 100vh; display: flex; align-items: center;
+            justify-content: center; overflow: hidden; padding-top: 80px;
+        }
+        .hero-bg-img {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            object-fit: cover; filter: grayscale(1); opacity: 0.25;
+        }
+        .hero-overlay {
+            position: absolute; inset: 0; z-index: 5;
+            background: linear-gradient(to top, var(--navy) 0%, rgba(5,8,16,0.4) 40%, rgba(5,8,16,0.6) 100%);
+        }
+        .hero-content {
+            position: relative; z-index: 20; text-align: center; padding: 0 16px; max-width: 900px;
+        }
+        .hero-title {
+            font-size: clamp(80px, 16vw, 220px); line-height: 0.85; letter-spacing: -0.05em;
+        }
+        .hero-sub {
+            margin-top: 20px; font-size: 16px; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.5em;
+        }
+        @keyframes pulse { 0% { opacity: 0.7; } 100% { opacity: 1; } }
+
+        .feature-strip {
+            display: flex; justify-content: center; gap: 48px; flex-wrap: wrap;
+            padding: 48px 16px; background: var(--navy-light);
+            border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+        }
+        .feature-item {
+            display: flex; align-items: center; gap: 12px;
+            font-family: var(--font-mono); font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);
+        }
+        .feature-icon {
+            width: 40px; height: 40px; border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary);
+        }
+
+        .shop-section { padding: 100px 16px; background: var(--navy); }
+        .shop-inner { max-width: 1200px; margin: 0 auto; }
+        .shop-header { margin-bottom: 60px; }
+        .shop-title { font-size: clamp(48px, 8vw, 96px); margin-bottom: 8px; }
+
+        .product-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 32px;
+        }
+        .product-img-wrap {
+            position: relative; aspect-ratio: 4/5; overflow: hidden;
+            background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+        }
+        .product-img-wrap img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(0.6); transition: filter 0.5s, transform 0.7s;
+        }
+        .product-card:hover .product-img-wrap img {
+            filter: grayscale(0); transform: scale(1.05);
+        }
+        .product-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.5);
+            opacity: 0; transition: opacity 0.3s; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .product-card:hover .product-overlay { opacity: 1; }
+        .product-info { margin-top: 20px; text-align: center; }
+        .product-name { font-size: 20px; letter-spacing: -0.01em; font-weight: 700; }
+        .product-price { font-family: var(--font-mono); color: var(--primary); font-size: 18px; margin-top: 4px; }
+        .sold-out-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.65);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .sold-out-label {
+            font-family: var(--font-display); font-size: 24px;
+            color: var(--primary); letter-spacing: 0.1em;
+        }
+
+        .about-section { padding: 100px 16px; background: var(--navy-light); }
+        .about-inner {
+            max-width: 1200px; margin: 0 auto; display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 64px; align-items: center;
+        }
+        .about-img-wrap { position: relative; }
+        .about-img-frame {
+            position: absolute; inset: -16px; border: 2px solid rgba(255,0,0,0.15);
+            transition: border-color 0.5s;
+        }
+        .about-img-wrap:hover .about-img-frame { border-color: rgba(255,0,0,0.4); }
+        .about-img {
+            width: 100%; filter: grayscale(1) contrast(1.2);
+            transition: filter 0.7s;
+        }
+        .about-img-wrap:hover .about-img { filter: grayscale(0.3) contrast(1.1); }
+        .about-title { font-size: clamp(48px, 6vw, 80px); margin-bottom: 32px; }
+        .about-text {
+            font-size: 18px; color: rgba(255,255,255,0.7); line-height: 1.8; margin-bottom: 24px;
+        }
+        .yt-link {
+            display: inline-flex; align-items: center; gap: 10px;
+            color: var(--text-muted); transition: color 0.3s;
+            font-family: var(--font-mono); font-size: 12px;
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+        .yt-link:hover { color: var(--primary); }
+
+        .contact-section { padding: 100px 16px; background: var(--navy); position: relative; overflow: hidden; }
+        .contact-section::before {
+            content: ''; position: absolute; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(255,0,0,0.06), transparent 70%);
+            top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;
+        }
+        .contact-inner { max-width: 600px; margin: 0 auto; text-align: center; position: relative; z-index: 2; }
+        .contact-title { font-size: clamp(40px, 6vw, 64px); margin-bottom: 12px; }
+
+        .site-footer {
+            padding: 64px 16px 32px; border-top: 1px solid var(--border); background: var(--navy-light);
+        }
+        .footer-inner { max-width: 1200px; margin: 0 auto; }
+        .footer-top {
+            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px;
+            padding-bottom: 48px; border-bottom: 1px solid var(--border);
+        }
+        .footer-brand { font-size: 32px; font-family: var(--font-display); font-style: italic; margin-bottom: 16px; }
+        .footer-desc { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); line-height: 1.8; max-width: 300px; }
+        .footer-col-title {
+            font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+            letter-spacing: 0.15em; color: var(--primary); margin-bottom: 20px;
+        }
+        .footer-link {
+            display: block; font-family: var(--font-mono); font-size: 12px;
+            color: var(--text-muted); margin-bottom: 12px; transition: color 0.3s;
+        }
+        .footer-link:hover { color: white; }
+        .footer-bottom {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: 32px; flex-wrap: wrap; gap: 16px;
+        }
+        .footer-copy { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-muted); }
+        .footer-socials { display: flex; gap: 16px; }
+        .footer-social {
+            width: 36px; height: 36px; border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); transition: all 0.3s;
+        }
+        .footer-social:hover { border-color: var(--primary); color: var(--primary); }
+
         @media (max-width: 768px) {
             .hero-title { font-size: 20vw !important; }
+            .feature-strip { gap: 24px; padding: 32px 16px; }
+            .about-inner { grid-template-columns: 1fr; }
+            .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+        }
+        @media (max-width: 480px) {
+            .footer-top { grid-template-columns: 1fr; }
+            .feature-strip { flex-direction: column; align-items: center; }
         }
     </style>
 </head>
@@ -89,7 +252,7 @@
                 <div id="auth-links"></div>
                 <button id="cart-btn" style="position:relative;background:none;border:none;color:white;cursor:pointer;" aria-label="Cart">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                    <span id="cart-count" style="position:absolute;top:-8px;right:-8px;background:var(--primary);font-size:9px;font-weight:900;padding:2px 6px;border-radius:50%;font-family:var(--font-mono);">0</span>
+                    <span id="cart-count" style="position:absolute;top:-8px;right:-8px;background:var(--primary);font-size:9px;font-weight:900;padding:2px 6px;border-radius:50%;font-family:var(--font-mono);display:none;">0</span>
                 </button>
             </div>
             <button id="mobile-menu-btn" style="display:none;background:none;border:none;color:white;cursor:pointer;">
@@ -98,7 +261,7 @@
         </div>
     </nav>
 
-    <div id="mobile-menu" style="position:fixed;inset:0;z-index:60;background:black;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;transform:translateY(-100%);transition:transform 0.4s ease;">
+    <div id="mobile-menu" style="position:fixed;inset:0;z-index:60;background:rgba(5,8,16,0.98);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;transform:translateY(-100%);transition:transform 0.4s ease;">
         <button id="close-menu-btn" style="position:absolute;top:24px;right:24px;background:none;border:none;color:white;font-size:24px;cursor:pointer;">✕</button>
         <a href="#shop" class="mobile-link" style="font-size:48px;font-family:var(--font-display);text-transform:uppercase;">Shop</a>
         <a href="#about" class="mobile-link" style="font-size:48px;font-family:var(--font-display);text-transform:uppercase;">About</a>
@@ -107,15 +270,13 @@
     </div>
 
     <div id="cart-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:70;display:none;transition:opacity 0.3s;opacity:0;" onclick="toggleCart()"></div>
-    <div id="cart-sidebar" class="cart-sidebar" style="position:fixed;top:0;right:0;height:100%;width:100%;max-width:450px;background:var(--navy);z-index:80;display:flex;flex-direction:column;border-left:1px solid var(--border);">
+    <div id="cart-sidebar" class="cart-sidebar" style="position:fixed;top:0;right:0;height:100%;width:100%;max-width:450px;background:var(--navy-light);z-index:80;display:flex;flex-direction:column;border-left:1px solid var(--border);">
         <div style="padding:24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
             <h2 style="font-size:24px;font-family:var(--font-display);letter-spacing:0.1em;">YOUR <span class="text-red">HAUL</span></h2>
             <button onclick="toggleCart()" style="background:none;border:none;color:white;cursor:pointer;font-size:20px;">✕</button>
         </div>
-        <div id="cart-items" style="flex:1;overflow-y:auto;padding:24px;">
-            <div style="text-align:center;color:rgba(255,255,255,0.2);font-family:var(--font-mono);margin-top:40px;">Cart is empty.</div>
-        </div>
-        <div style="padding:24px;border-top:1px solid var(--border);background:rgba(0,0,0,0.2);">
+        <div id="cart-items" style="flex:1;overflow-y:auto;padding:24px;"></div>
+        <div id="cart-footer" style="padding:24px;border-top:1px solid var(--border);background:rgba(0,0,0,0.2);display:none;">
             <div style="margin-bottom:24px;font-family:var(--font-mono);font-size:14px;">
                 <div style="display:flex;justify-content:space-between;color:var(--text-muted);margin-bottom:8px;"><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
                 <div style="display:flex;justify-content:space-between;color:var(--text-muted);margin-bottom:8px;"><span>Shipping</span><span id="cart-shipping">$0.00</span></div>
@@ -199,51 +360,104 @@
         </div>
     </div>
 
-    <section id="home" class="hero-gradient" style="position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;padding-top:80px;">
-        <div style="position:absolute;inset:0;background:linear-gradient(to top, var(--navy), transparent);z-index:10;"></div>
-        <img src="https://images.unsplash.com/photo-1621213327685-6d09e99c1040?q=80&w=2070&auto=format&fit=crop" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1);opacity:0.3;">
-        <div style="position:relative;z-index:20;text-align:center;padding:0 16px;max-width:900px;">
-            <h1 class="hero-title reveal glitch-wrapper" style="font-size:16vw;line-height:0.85;letter-spacing:-0.05em;">
+    <section id="home" class="hero-section">
+        <div class="hero-overlay"></div>
+        <img src="https://images.unsplash.com/photo-1621213327685-6d09e99c1040?q=80&w=2070&auto=format&fit=crop" class="hero-bg-img" alt="">
+        <div class="hero-content">
+            <h1 class="hero-title reveal glitch-wrapper">
                 <span class="glitch-text" data-text="MYALIK">MYALIK</span>
             </h1>
-            <p class="font-mono reveal" style="margin-top:20px;font-size:16px;color:var(--primary);text-transform:uppercase;letter-spacing:0.5em;animation:pulse 3s ease-in-out infinite alternate;">SIDEWAYS ALWAYS &bull; EST. 2026</p>
+            <p class="font-mono reveal hero-sub" style="animation:pulse 3s ease-in-out infinite alternate;">SIDEWAYS ALWAYS &bull; EST. 2026</p>
             <div class="reveal" style="margin-top:48px;">
                 <a href="#shop" class="btn btn-primary" style="font-size:22px;padding:18px 48px;box-shadow:0 0 40px rgba(255,0,0,0.3);">SHOP THE DROP</a>
             </div>
-        </div>
-    </section>
-
-    <div class="section-divider"></div>
-
-    <section id="shop" style="padding:80px 16px;background:var(--navy);">
-        <div style="max-width:1200px;margin:0 auto;">
-            <div class="reveal" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;margin-bottom:48px;">
-                <div>
-                    <h2 style="font-size:clamp(48px,8vw,96px);margin-bottom:8px;">LATEST <span class="text-red">DROPS</span></h2>
-                    <p class="font-mono text-muted" style="font-size:12px;text-transform:uppercase;letter-spacing:0.3em;">Premium Drift Culture Apparel</p>
-                </div>
-                <div class="font-mono text-muted" style="font-size:11px;text-align:right;display:none;" id="product-count-display"></div>
+            <div class="reveal" style="margin-top:64px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" style="animation: bounce 2s ease-in-out infinite;"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
-            <div id="product-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:32px;"></div>
+        </div>
+    </section>
+
+    <div class="marquee-wrap">
+        <div class="marquee-track">
+            <span>FREE SHIPPING ON ORDERS OVER $100</span>
+            <span>&bull;</span>
+            <span>DRIFT CULTURE APPAREL</span>
+            <span>&bull;</span>
+            <span>SIDEWAYS ALWAYS</span>
+            <span>&bull;</span>
+            <span>LIMITED DROPS</span>
+            <span>&bull;</span>
+            <span>FREE SHIPPING ON ORDERS OVER $100</span>
+            <span>&bull;</span>
+            <span>DRIFT CULTURE APPAREL</span>
+            <span>&bull;</span>
+            <span>SIDEWAYS ALWAYS</span>
+            <span>&bull;</span>
+            <span>LIMITED DROPS</span>
+            <span>&bull;</span>
+        </div>
+    </div>
+
+    <div class="feature-strip">
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"/><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-1"/><circle cx="7" cy="18" r="2"/><path d="M15 18H9"/><circle cx="17" cy="18" r="2"/></svg>
+            </div>
+            Fast Shipping
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            Secure Checkout
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            Premium Quality
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+            Limited Drops
+        </div>
+    </div>
+
+    <section id="shop" class="shop-section">
+        <div class="shop-inner">
+            <div class="reveal shop-header">
+                <h2 class="shop-title">LATEST <span class="text-red">DROPS</span></h2>
+                <p class="font-mono text-muted" style="font-size:12px;text-transform:uppercase;letter-spacing:0.3em;">Premium Drift Culture Apparel</p>
+            </div>
+            <div id="product-grid" class="product-grid"></div>
+            <div id="no-products" style="display:none;text-align:center;padding:80px 0;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" style="margin-bottom:20px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <p class="font-mono text-muted" style="font-size:14px;">No products available yet. Check back soon.</p>
+            </div>
         </div>
     </section>
 
     <div class="section-divider"></div>
 
-    <section id="about" style="padding:80px 16px;background:var(--navy-light);">
-        <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit, minmax(400px, 1fr));gap:48px;align-items:center;">
-            <div class="reveal" style="position:relative;">
-                <div style="position:absolute;inset:-16px;border:2px solid rgba(255,0,0,0.15);transition:border-color 0.5s;"></div>
-                <img src="https://images.unsplash.com/photo-1544433100-3f0449492f25?q=80&w=2070&auto=format&fit=crop" alt="S13 Drift" style="width:100%;filter:grayscale(1) contrast(1.2);transition:filter 0.7s;">
+    <section id="about" class="about-section">
+        <div class="about-inner">
+            <div class="reveal about-img-wrap">
+                <div class="about-img-frame"></div>
+                <img src="https://images.unsplash.com/photo-1544433100-3f0449492f25?q=80&w=2070&auto=format&fit=crop" alt="S13 Drift" class="about-img">
             </div>
             <div class="reveal">
-                <h2 style="font-size:clamp(48px,6vw,80px);margin-bottom:32px;">THE <span class="text-red">GRIND</span></h2>
-                <p style="font-size:18px;color:rgba(255,255,255,0.7);line-height:1.8;margin-bottom:24px;">
+                <h2 class="about-title">THE <span class="text-red">GRIND</span></h2>
+                <p class="about-text">
                     Building the S13 wasn't about the car. It was about the mindset. Sideways Always isn't just a brand; it's a commitment to the craft, the smoke, and the endless pursuit of the perfect line.
                 </p>
-                <a href="https://www.youtube.com/@davidmyalik" target="_blank" style="display:inline-flex;align-items:center;gap:8px;color:var(--text-muted);transition:color 0.3s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color=''">
+                <p class="about-text" style="font-size:15px;font-style:italic;color:rgba(255,255,255,0.4);border-left:3px solid var(--primary);padding-left:20px;">
+                    "Every drift starts with a decision to let go of the straight line."
+                </p>
+                <a href="https://www.youtube.com/@davidmyalik" target="_blank" class="yt-link" style="margin-top:16px;">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="var(--navy)"/></svg>
-                    <span class="font-mono" style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;">Watch on YouTube</span>
+                    Watch on YouTube
                 </a>
             </div>
         </div>
@@ -251,17 +465,55 @@
 
     <div class="section-divider"></div>
 
-    <section id="contact" style="padding:80px 16px;background:var(--navy);">
-        <div style="max-width:600px;margin:0 auto;text-align:center;" class="reveal">
-            <h2 style="font-size:clamp(40px,6vw,64px);margin-bottom:12px;">GET IN <span class="text-red">TOUCH</span></h2>
-            <p class="font-mono text-muted" style="font-size:12px;margin-bottom:40px;">Questions, collabs, or just wanna talk cars?</p>
+    <section id="contact" class="contact-section">
+        <div class="contact-inner reveal">
+            <h2 class="contact-title">GET IN <span class="text-red">TOUCH</span></h2>
+            <p class="font-mono text-muted" style="font-size:12px;margin-bottom:40px;letter-spacing:0.1em;">Questions, collabs, or just wanna talk cars?</p>
             <a href="mailto:contact@davidmyalik.com" class="btn btn-secondary" style="padding:14px 40px;">CONTACT US</a>
         </div>
     </section>
 
-    <footer style="padding:48px 16px;border-top:1px solid var(--border);background:var(--navy);text-align:center;">
-        <h2 style="font-size:32px;font-family:var(--font-display);font-style:italic;margin-bottom:16px;">DAVID <span class="text-red">MYALIK</span></h2>
-        <p class="font-mono text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:0.2em;">&copy; 2026 Sideways Always. All Rights Reserved.</p>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-top">
+                <div>
+                    <div class="footer-brand">DAVID <span class="text-red">MYALIK</span></div>
+                    <p class="footer-desc">Drift culture apparel for those who live life sideways. Born from the smoke, built for the streets.</p>
+                </div>
+                <div>
+                    <div class="footer-col-title">Shop</div>
+                    <a href="#shop" class="footer-link">All Products</a>
+                    <a href="#shop" class="footer-link">New Arrivals</a>
+                    <a href="#shop" class="footer-link">Best Sellers</a>
+                </div>
+                <div>
+                    <div class="footer-col-title">Company</div>
+                    <a href="#about" class="footer-link">About Us</a>
+                    <a href="#contact" class="footer-link">Contact</a>
+                    <a href="https://www.youtube.com/@davidmyalik" target="_blank" class="footer-link">YouTube</a>
+                </div>
+                <div>
+                    <div class="footer-col-title">Support</div>
+                    <a href="#contact" class="footer-link">Help Center</a>
+                    <a href="#contact" class="footer-link">Shipping Info</a>
+                    <a href="#contact" class="footer-link">Returns</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-copy">&copy; 2026 Sideways Always. All Rights Reserved.</p>
+                <div class="footer-socials">
+                    <a href="https://www.youtube.com/@davidmyalik" target="_blank" class="footer-social" aria-label="YouTube">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="var(--navy-light)"/></svg>
+                    </a>
+                    <a href="https://instagram.com/davidmyalik" target="_blank" class="footer-social" aria-label="Instagram">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                    <a href="https://tiktok.com/@davidmyalik" target="_blank" class="footer-social" aria-label="TikTok">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.88-2.88 2.89 2.89 0 0 1 2.88-2.88c.3 0 .59.05.86.12V9.01a6.36 6.36 0 0 0-.86-.06C5.83 8.95 3 11.78 3 15.44S5.83 21.93 9.49 21.93s6.49-2.83 6.49-6.49V9.4a8.28 8.28 0 0 0 4.84 1.56V7.51a4.85 4.85 0 0 1-1.23-.82z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
     </footer>
 
     <div class="toast-container" id="toast-container"></div>
@@ -273,6 +525,8 @@
         const SHIPPING_COST = 15.00;
 
         async function init() {
+            localStorage.removeItem('dm-cart');
+
             const [prodRes, authRes] = await Promise.all([
                 fetch('/api/products'),
                 fetch('/api/auth/me')
@@ -283,10 +537,8 @@
 
             renderAuthLinks();
             renderProducts();
+            updateCartUI();
             initScrollAnimations();
-
-            const savedCart = localStorage.getItem('dm-cart');
-            if (savedCart) { cart = JSON.parse(savedCart); updateCartUI(); }
         }
 
         function renderAuthLinks() {
@@ -316,6 +568,16 @@
 
         function renderProducts() {
             const grid = document.getElementById('product-grid');
+            const noProducts = document.getElementById('no-products');
+
+            if (products.length === 0) {
+                grid.style.display = 'none';
+                noProducts.style.display = 'block';
+                return;
+            }
+            grid.style.display = '';
+            noProducts.style.display = 'none';
+
             grid.innerHTML = products.map(p => {
                 let stockHTML = '';
                 if (p.stock <= 0) {
@@ -326,28 +588,30 @@
                 const isOutOfStock = p.stock <= 0;
                 return `
                 <div class="product-card reveal" style="position:relative;">
-                    <div style="position:relative;aspect-ratio:4/5;overflow:hidden;background:rgba(255,255,255,0.03);border:1px solid var(--border);">
-                        <img src="${p.image_url}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;filter:grayscale(0.7);transition:filter 0.5s,transform 0.7s;" onmouseover="this.style.filter='grayscale(0)';this.style.transform='scale(1.05)'" onmouseout="this.style.filter='grayscale(0.7)';this.style.transform='scale(1)'">
-                        ${isOutOfStock ? '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;"><span style="font-family:var(--font-display);font-size:24px;color:var(--primary);letter-spacing:0.1em;">SOLD OUT</span></div>' : `
-                        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);opacity:0;transition:opacity 0.3s;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
-                            <button onclick="addToCart(${p.id})" class="btn btn-primary" style="transform:translateY(8px);transition:transform 0.3s;" onmouseover="this.style.transform='translateY(0)'" onmouseout="this.style.transform='translateY(8px)'">ADD TO CART</button>
+                    <div class="product-img-wrap">
+                        <img src="${p.image_url}" alt="${p.name}">
+                        ${isOutOfStock ? '<div class="sold-out-overlay"><span class="sold-out-label">SOLD OUT</span></div>' : `
+                        <div class="product-overlay">
+                            <button onclick="addToCart(${p.id})" class="btn btn-primary">ADD TO CART</button>
                         </div>`}
                     </div>
-                    <div style="margin-top:20px;text-align:center;">
-                        <h3 style="font-size:20px;letter-spacing:-0.01em;font-weight:700;">${p.name}</h3>
-                        <p class="font-mono text-red" style="font-size:18px;margin-top:4px;">$${parseFloat(p.price).toFixed(2)}</p>
+                    <div class="product-info">
+                        <h3 class="product-name">${p.name}</h3>
+                        <p class="product-price">$${parseFloat(p.price).toFixed(2)}</p>
                         ${stockHTML}
                         ${p.description ? `<p class="text-muted text-xs" style="margin-top:8px;line-height:1.5;">${p.description.substring(0, 80)}${p.description.length > 80 ? '...' : ''}</p>` : ''}
                     </div>
                 </div>`;
             }).join('');
+
+            initScrollAnimations();
         }
 
         function initScrollAnimations() {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
             }, { threshold: 0.1 });
-            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            document.querySelectorAll('.reveal:not(.active)').forEach(el => observer.observe(el));
         }
 
         function toggleCart() {
@@ -377,9 +641,10 @@
                 }
                 existing.qty++;
             } else {
-                cart.push({ id: product.id, name: product.name, price: parseFloat(product.price), img: product.image_url, image_url: product.image_url, qty: 1 });
+                cart.push({ id: product.id, name: product.name, price: parseFloat(product.price), image_url: product.image_url, qty: 1 });
             }
             updateCartUI();
+            showToast(`${product.name} added to cart`, 'success');
             if (!document.getElementById('cart-sidebar').classList.contains('open')) toggleCart();
         }
 
@@ -404,38 +669,52 @@
         function updateCartUI() {
             const container = document.getElementById('cart-items');
             const countBadge = document.getElementById('cart-count');
+            const cartFooter = document.getElementById('cart-footer');
             const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
             const subtotal = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
             const shipping = subtotal > 0 ? SHIPPING_COST : 0;
             const total = subtotal + shipping;
 
             countBadge.textContent = totalQty;
-            document.getElementById('cart-subtotal').textContent = `$${subtotal.toFixed(2)}`;
-            document.getElementById('cart-shipping').textContent = `$${shipping.toFixed(2)}`;
-            document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+            countBadge.style.display = totalQty > 0 ? 'block' : 'none';
 
             if (cart.length === 0) {
-                container.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.2);font-family:var(--font-mono);margin-top:40px;">Cart is empty.</div>';
+                cartFooter.style.display = 'none';
+                container.innerHTML = `
+                    <div style="text-align:center;padding:60px 0;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" style="margin-bottom:16px;">
+                            <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
+                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                        </svg>
+                        <p class="font-mono" style="color:rgba(255,255,255,0.2);font-size:13px;">Your cart is empty</p>
+                        <p class="font-mono" style="color:rgba(255,255,255,0.1);font-size:11px;margin-top:8px;">Add items to get started</p>
+                    </div>`;
             } else {
+                cartFooter.style.display = 'block';
+                document.getElementById('cart-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+                document.getElementById('cart-shipping').textContent = `$${shipping.toFixed(2)}`;
+                document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
                 container.innerHTML = cart.map(item => `
                     <div style="display:flex;gap:12px;border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:16px;">
-                        <img src="${item.img || item.image_url}" style="width:64px;height:64px;object-fit:cover;filter:grayscale(0.5);">
+                        <img src="${item.image_url}" style="width:64px;height:64px;object-fit:cover;filter:grayscale(0.5);border:1px solid var(--border);">
                         <div style="flex:1;">
                             <h4 style="font-weight:700;text-transform:uppercase;font-size:13px;">${item.name}</h4>
                             <p class="font-mono text-muted" style="font-size:12px;">$${item.price.toFixed(2)}</p>
                             <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
-                                <button onclick="updateCartQty(${item.id}, -1)" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:white;width:24px;height:24px;cursor:pointer;font-size:14px;">-</button>
-                                <span class="font-mono" style="font-size:13px;">${item.qty}</span>
-                                <button onclick="updateCartQty(${item.id}, 1)" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:white;width:24px;height:24px;cursor:pointer;font-size:14px;">+</button>
+                                <button onclick="updateCartQty(${item.id}, -1)" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:white;width:28px;height:28px;cursor:pointer;font-size:14px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">-</button>
+                                <span class="font-mono" style="font-size:13px;min-width:20px;text-align:center;">${item.qty}</span>
+                                <button onclick="updateCartQty(${item.id}, 1)" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:white;width:28px;height:28px;cursor:pointer;font-size:14px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">+</button>
                             </div>
                         </div>
-                        <button onclick="removeFromCart(${item.id})" style="background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                        </button>
+                        <div style="display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;">
+                            <button onclick="removeFromCart(${item.id})" style="background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                            <span class="font-mono text-red" style="font-size:13px;font-weight:600;">$${(item.price * item.qty).toFixed(2)}</span>
+                        </div>
                     </div>
                 `).join('');
             }
-            localStorage.setItem('dm-cart', JSON.stringify(cart));
         }
 
         function startCheckout() {
@@ -457,7 +736,7 @@
             });
             for (let i = 1; i <= 2; i++) {
                 const ind = document.getElementById(`step-${i}-ind`);
-                if (i < step) { ind.style.background = 'white'; ind.style.color = 'black'; ind.style.borderColor = 'white'; ind.innerHTML = '✓'; }
+                if (i < step) { ind.style.background = 'white'; ind.style.color = 'black'; ind.style.borderColor = 'white'; ind.innerHTML = '&#10003;'; }
                 else if (i === step) { ind.style.background = 'var(--primary)'; ind.style.color = 'white'; ind.style.borderColor = 'var(--primary)'; ind.innerHTML = i; }
                 else { ind.style.background = 'transparent'; ind.style.color = 'white'; ind.style.borderColor = 'rgba(255,255,255,0.3)'; ind.innerHTML = i; }
             }
@@ -473,7 +752,7 @@
                     </div>
                     ${cart.map(item => `
                         <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
-                            <img src="${item.img || item.image_url}" style="width:40px;height:40px;object-fit:cover;filter:grayscale(.5);">
+                            <img src="${item.image_url}" style="width:40px;height:40px;object-fit:cover;filter:grayscale(.5);border:1px solid var(--border);">
                             <div style="flex:1;"><span class="text-sm">${item.name}</span></div>
                             <span class="font-mono text-xs text-muted">x${item.qty}</span>
                             <span class="font-mono text-sm">$${(item.price * item.qty).toFixed(2)}</span>
