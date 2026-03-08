@@ -4,6 +4,8 @@ const PgSession = require('connect-pg-simple')(session);
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
 const pool = require('./db');
 
 const initDatabase = require('./db-init');
@@ -12,6 +14,27 @@ const app = express();
 const PORT = 5000;
 
 initDatabase();
+
+const uploadsDir = path.join(__dirname, 'public', 'uploads');
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadsDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `product-${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`);
+  }
+});
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowed.includes(ext)) cb(null, true);
+    else cb(new Error('Only image files are allowed'));
+  }
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -349,17 +372,25 @@ app.put('/api/user/password', requireAuth, async (req, res) => {
 
 app.get('/api/admin/stats', requireAdmin, async (req, res) => {
   try {
-    const [users, orders, revenue, products] = await Promise.all([
+    const [users, orders, revenue, products, lowStock, pendingOrders, recentUsers, monthlyRevenue] = await Promise.all([
       pool.query('SELECT COUNT(*) FROM users'),
       pool.query('SELECT COUNT(*) FROM orders'),
       pool.query("SELECT COALESCE(SUM(total), 0) as total FROM orders WHERE status != 'cancelled'"),
-      pool.query('SELECT COUNT(*) FROM products WHERE is_active = true')
+      pool.query('SELECT COUNT(*) FROM products WHERE is_active = true'),
+      pool.query('SELECT COUNT(*) FROM products WHERE is_active = true AND stock <= 10 AND stock > 0'),
+      pool.query("SELECT COUNT(*) FROM orders WHERE status = 'pending'"),
+      pool.query("SELECT COUNT(*) FROM users WHERE created_at > NOW() - INTERVAL '30 days'"),
+      pool.query("SELECT COALESCE(SUM(total), 0) as total FROM orders WHERE status != 'cancelled' AND created_at > NOW() - INTERVAL '30 days'")
     ]);
     res.json({
       totalUsers: parseInt(users.rows[0].count),
       totalOrders: parseInt(orders.rows[0].count),
       totalRevenue: parseFloat(revenue.rows[0].total),
-      totalProducts: parseInt(products.rows[0].count)
+      totalProducts: parseInt(products.rows[0].count),
+      lowStockCount: parseInt(lowStock.rows[0].count),
+      pendingOrders: parseInt(pendingOrders.rows[0].count),
+      newUsersThisMonth: parseInt(recentUsers.rows[0].count),
+      monthlyRevenue: parseFloat(monthlyRevenue.rows[0].total)
     });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -488,10 +519,84 @@ app.put('/api/admin/orders/:id/status', requireAdmin, async (req, res) => {
   }
 });
 
+app.post('/api/admin/upload', requireAdmin, (req, res) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') return res.status(400).json({ error: 'File too large (max 10MB)' });
+      return res.status(400).json({ error: err.message || 'Upload failed' });
+    }
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    res.json({ url: `/uploads/${req.file.filename}` });
+  });
+});
+
+app.get('/api/admin/categories', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT DISTINCT category FROM products WHERE category IS NOT NULL AND category != \'\' ORDER BY category');
+    const defaults = ['T-Shirts', 'Hoodies', 'Hats', 'Stickers', 'Accessories', 'Posters', 'Jackets', 'Pants'];
+    const existing = result.rows.map(r => r.category);
+    const all = [...new Set([...defaults, ...existing])].sort();
+    res.json(all);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.put('/api/admin/users/:id', requireAdmin, async (req, res) => {
+  const { firstName, lastName, email, phone, role, newPassword } = req.body;
+  try {
+    const target = await pool.query('SELECT * FROM users WHERE id = $1', [req.params.id]);
+    if (target.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    if (target.rows[0].role === 'owner' && req.session.userRole !== 'owner') {
+      return res.status(403).json({ error: 'Cannot edit the owner account' });
+    }
+    const updates = [];
+    const values = [];
+    let idx = 1;
+    if (firstName) { updates.push(`first_name = $${idx++}`); values.push(firstName); }
+    if (lastName) { updates.push(`last_name = $${idx++}`); values.push(lastName); }
+    if (email) { updates.push(`email = $${idx++}`); values.push(email.toLowerCase()); }
+    if (phone !== undefined) { updates.push(`phone = $${idx++}`); values.push(phone); }
+    if (role && req.session.userRole === 'owner' && target.rows[0].role !== 'owner') {
+      updates.push(`role = $${idx++}`); values.push(role);
+    }
+    if (newPassword && newPassword.length >= 6) {
+      const hash = await bcrypt.hash(newPassword, 10);
+      updates.push(`password_hash = $${idx++}`); values.push(hash);
+    }
+    if (updates.length === 0) return res.status(400).json({ error: 'No changes provided' });
+    updates.push('updated_at = NOW()');
+    values.push(req.params.id);
+    await pool.query(`UPDATE users SET ${updates.join(', ')} WHERE id = $${idx}`, values);
+    res.json({ message: 'User updated successfully' });
+  } catch (err) {
+    if (err.code === '23505') return res.status(400).json({ error: 'Email already in use' });
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.delete('/api/admin/users/:id', requireAdmin, async (req, res) => {
+  try {
+    const target = await pool.query('SELECT role FROM users WHERE id = $1', [req.params.id]);
+    if (target.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    if (target.rows[0].role === 'owner') return res.status(403).json({ error: 'Cannot delete the owner' });
+    if (parseInt(req.params.id) === req.session.userId) return res.status(400).json({ error: 'Cannot delete yourself' });
+    const orderCheck = await pool.query('SELECT COUNT(*) FROM orders WHERE user_id = $1', [req.params.id]);
+    if (parseInt(orderCheck.rows[0].count) > 0) {
+      return res.status(400).json({ error: 'Cannot delete user with existing orders. Set their role to customer instead.' });
+    }
+    await pool.query('DELETE FROM addresses WHERE user_id = $1', [req.params.id]);
+    await pool.query('DELETE FROM users WHERE id = $1', [req.params.id]);
+    res.json({ message: 'User deleted' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 app.get('/api/admin/users/:id', requireAdmin, async (req, res) => {
   try {
     const user = await pool.query(
-      'SELECT id, email, first_name, last_name, role, phone, created_at FROM users WHERE id = $1',
+      'SELECT id, email, first_name, last_name, role, phone, created_at, password_hash FROM users WHERE id = $1',
       [req.params.id]
     );
     if (user.rows.length === 0) return res.status(404).json({ error: 'User not found' });

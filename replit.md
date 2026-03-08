@@ -79,16 +79,20 @@ api/checkout.js        - Original Netlify function (reference only)
 - `POST /api/user/addresses` - Add address
 
 ### Admin
-- `GET /api/admin/stats` - Dashboard stats
+- `GET /api/admin/stats` - Dashboard stats (includes monthly revenue, pending orders, low stock, new users)
 - `GET /api/admin/users` - List all users
 - `PUT /api/admin/users/:id/role` - Change user role
-- `GET /api/admin/users/:id` - User detail with orders/addresses
+- `GET /api/admin/users/:id` - User detail with orders/addresses/password hash
+- `PUT /api/admin/users/:id` - Edit user (name, email, phone, role, password reset)
+- `DELETE /api/admin/users/:id` - Delete user (blocked if user has orders)
 - `GET /api/admin/products` - All products (inc. inactive)
 - `POST /api/admin/products` - Create product
 - `PUT /api/admin/products/:id` - Update product
 - `DELETE /api/admin/products/:id` - Deactivate product
 - `GET /api/admin/orders` - All orders
 - `PUT /api/admin/orders/:id/status` - Update order status/tracking
+- `POST /api/admin/upload` - Upload product image (multer, max 10MB, stored in public/uploads/)
+- `GET /api/admin/categories` - Get all categories (DB + defaults: T-Shirts, Hoodies, Hats, etc.)
 
 ## Environment Variables (for Vercel/Neon deployment)
 - `DATABASE_URL` - PostgreSQL connection string (Neon)
