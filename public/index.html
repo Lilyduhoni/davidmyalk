@@ -570,7 +570,6 @@
 
             renderNav(currentUser, { isStore: true });
             renderFooter();
-            renderAnnouncementBar();
             document.getElementById('cart-btn').addEventListener('click', toggleCart);
 
             try {
@@ -585,12 +584,7 @@
                 if (siteSettings.hero_title) { const el = document.getElementById('hero-title-text'); el.textContent = siteSettings.hero_title; el.dataset.text = siteSettings.hero_title; }
                 if (siteSettings.hero_subtitle) document.getElementById('hero-subtitle-text').textContent = siteSettings.hero_subtitle;
                 if (siteSettings.hero_cta_text) document.getElementById('hero-cta-btn').textContent = siteSettings.hero_cta_text;
-                if (siteSettings.hero_bg_image) document.getElementById('hero-bg-img').src = siteSettings.hero_bg_image;
                 if (siteSettings.contact_email) document.getElementById('contact-email-btn').href = 'mailto:' + siteSettings.contact_email;
-                if (siteSettings.meta_title) document.title = siteSettings.meta_title;
-                if (siteSettings.meta_description) { let m = document.querySelector('meta[name="description"]'); if (m) m.content = siteSettings.meta_description; }
-                if (siteSettings.meta_keywords) { let m = document.querySelector('meta[name="keywords"]'); if (m) m.content = siteSettings.meta_keywords; }
-                if (siteSettings.og_image) { document.querySelectorAll('meta[property="og:image"],meta[name="twitter:image"]').forEach(m => m.content = siteSettings.og_image); }
                 if (siteSettings.free_shipping_threshold && parseFloat(siteSettings.free_shipping_threshold) > 0) { window.FREE_SHIPPING_THRESHOLD = parseFloat(siteSettings.free_shipping_threshold); }
                 if (siteSettings.low_stock_threshold) { window.LOW_STOCK_THRESHOLD = parseInt(siteSettings.low_stock_threshold) || 10; }
                 const grindData = await grindRes.json();

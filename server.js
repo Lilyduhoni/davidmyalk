@@ -678,9 +678,7 @@ app.put('/api/admin/settings/bulk', requireAdmin, async (req, res) => {
   const allowedKeys = [
     'store_name', 'store_tagline', 'store_description', 'contact_email', 'contact_phone', 'contact_address',
     'business_hours', 'currency', 'order_prefix', 'min_order_amount', 'free_shipping_threshold', 'tax_rate', 'tax_enabled',
-    'hero_title', 'hero_subtitle', 'hero_cta_text', 'hero_bg_image',
-    'meta_title', 'meta_description', 'meta_keywords', 'og_image',
-    'announcement_enabled', 'announcement_text', 'announcement_bg', 'announcement_text_color',
+    'hero_title', 'hero_subtitle', 'hero_cta_text',
     'checkout_terms_enabled', 'checkout_terms_text',
     'maintenance_mode', 'maintenance_message',
     'footer_tagline',

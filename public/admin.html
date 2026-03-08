@@ -410,8 +410,7 @@
                 <div class="settings-tabs">
                     <button class="settings-tab active" data-tab="general" onclick="showSettingsTab('general')">General</button>
                     <button class="settings-tab" data-tab="shipping" onclick="showSettingsTab('shipping')">Shipping & Tax</button>
-                    <button class="settings-tab" data-tab="branding" onclick="showSettingsTab('branding')">Branding</button>
-                    <button class="settings-tab" data-tab="seo" onclick="showSettingsTab('seo')">SEO</button>
+                    <button class="settings-tab" data-tab="branding" onclick="showSettingsTab('branding')">Hero</button>
                     <button class="settings-tab" data-tab="content" onclick="showSettingsTab('content')">Content</button>
                     <button class="settings-tab" data-tab="socials" onclick="showSettingsTab('socials')">Social Links</button>
                     <button class="settings-tab" data-tab="checkout" onclick="showSettingsTab('checkout')">Checkout</button>
@@ -536,7 +535,7 @@
                     </div>
                 </div>
 
-                <!-- BRANDING TAB -->
+                <!-- HERO TAB -->
                 <div class="settings-panel" id="stab-branding" style="display:none;">
                     <div class="card" style="max-width:700px;">
                         <h3 class="settings-card-title">HERO <span class="text-red">SECTION</span></h3>
@@ -553,74 +552,7 @@
                             <label class="input-label">CTA BUTTON TEXT</label>
                             <input type="text" class="input-field" id="set-hero_cta_text" placeholder="SHOP THE DROP">
                         </div>
-                        <div class="mb-4">
-                            <label class="input-label">BACKGROUND IMAGE URL</label>
-                            <input type="text" class="input-field" id="set-hero_bg_image" placeholder="https://images.unsplash.com/..." oninput="updateHeroBgPreview()">
-                            <div id="hero-bg-preview" style="margin-top:10px;"></div>
-                        </div>
-                        <button class="btn btn-primary" onclick="saveBulkSettings(['hero_title','hero_subtitle','hero_cta_text','hero_bg_image'])">SAVE HERO SECTION</button>
-                    </div>
-                    <div class="card" style="max-width:700px;margin-top:24px;">
-                        <h3 class="settings-card-title">ANNOUNCEMENT <span class="text-red">BAR</span></h3>
-                        <p class="settings-card-desc">Display a site-wide announcement banner at the top of every page.</p>
-                        <div class="mb-4">
-                            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-                                <input type="checkbox" id="set-announcement_enabled" style="accent-color:var(--primary);width:20px;height:20px;">
-                                <span class="font-mono text-xs">ENABLE ANNOUNCEMENT BAR</span>
-                            </label>
-                        </div>
-                        <div class="mb-4">
-                            <label class="input-label">ANNOUNCEMENT TEXT</label>
-                            <input type="text" class="input-field" id="set-announcement_text" placeholder="FREE SHIPPING ON ORDERS OVER $75!" oninput="updateAnnouncementPreview()">
-                        </div>
-                        <div class="grid-2 mb-4">
-                            <div>
-                                <label class="input-label">BACKGROUND COLOR</label>
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <input type="color" id="set-announcement_bg" value="#e50000" style="width:40px;height:36px;border:1px solid var(--border);cursor:pointer;background:none;" oninput="document.getElementById('set-announcement_bg_text').value=this.value;updateAnnouncementPreview()">
-                                    <input type="text" class="input-field" id="set-announcement_bg_text" value="#e50000" style="max-width:120px;font-size:12px;" oninput="document.getElementById('set-announcement_bg').value=this.value;updateAnnouncementPreview()">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="input-label">TEXT COLOR</label>
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <input type="color" id="set-announcement_text_color" value="#ffffff" style="width:40px;height:36px;border:1px solid var(--border);cursor:pointer;background:none;" oninput="document.getElementById('set-announcement_text_color_text').value=this.value;updateAnnouncementPreview()">
-                                    <input type="text" class="input-field" id="set-announcement_text_color_text" value="#ffffff" style="max-width:120px;font-size:12px;" oninput="document.getElementById('set-announcement_text_color').value=this.value;updateAnnouncementPreview()">
-                                </div>
-                            </div>
-                        </div>
-                        <div id="announcement-preview" style="margin-bottom:16px;"></div>
-                        <button class="btn btn-primary" onclick="saveBulkSettings(['announcement_enabled','announcement_text','announcement_bg','announcement_text_color'])">SAVE ANNOUNCEMENT</button>
-                    </div>
-                </div>
-
-                <!-- SEO TAB -->
-                <div class="settings-panel" id="stab-seo" style="display:none;">
-                    <div class="card" style="max-width:700px;">
-                        <h3 class="settings-card-title">SEO & <span class="text-red">META TAGS</span></h3>
-                        <p class="settings-card-desc">Control how your store appears in search engines and social media shares.</p>
-                        <div class="mb-4">
-                            <label class="input-label">PAGE TITLE</label>
-                            <input type="text" class="input-field" id="set-meta_title" placeholder="DAVID MYALIK | Sideways Always - Drift Culture Merch & Apparel">
-                            <span class="font-mono text-xs text-muted">Shown in browser tabs and search results</span>
-                        </div>
-                        <div class="mb-4">
-                            <label class="input-label">META DESCRIPTION</label>
-                            <textarea class="input-field" id="set-meta_description" style="min-height:80px;" placeholder="Official merch store for David Myalik. Drift culture apparel..."></textarea>
-                            <span class="font-mono text-xs text-muted">Shown below the title in search results (150-160 chars recommended)</span>
-                        </div>
-                        <div class="mb-4">
-                            <label class="input-label">META KEYWORDS</label>
-                            <input type="text" class="input-field" id="set-meta_keywords" placeholder="drift merch, drift culture, car culture, streetwear...">
-                            <span class="font-mono text-xs text-muted">Comma-separated keywords for search engines</span>
-                        </div>
-                        <div class="mb-4">
-                            <label class="input-label">OG / SOCIAL SHARE IMAGE URL</label>
-                            <input type="text" class="input-field" id="set-og_image" placeholder="https://yourdomain.com/images/og-image.png" oninput="updateOgImagePreview()">
-                            <span class="font-mono text-xs text-muted">Image shown when sharing links on social media (1200x630 recommended)</span>
-                            <div id="og-image-preview" style="margin-top:10px;"></div>
-                        </div>
-                        <button class="btn btn-primary" onclick="saveBulkSettings(['meta_title','meta_description','meta_keywords','og_image'])">SAVE SEO SETTINGS</button>
+                        <button class="btn btn-primary" onclick="saveBulkSettings(['hero_title','hero_subtitle','hero_cta_text'])">SAVE HERO SECTION</button>
                     </div>
                 </div>
 
@@ -945,8 +877,8 @@
         }
 
         function populateBulkSettings() {
-            const textFields = ['store_name','store_tagline','store_description','footer_tagline','contact_email','contact_phone','contact_address','business_hours','currency','order_prefix','min_order_amount','free_shipping_threshold','tax_rate','hero_title','hero_subtitle','hero_cta_text','hero_bg_image','meta_title','meta_description','meta_keywords','og_image','announcement_text','announcement_bg','announcement_text_color','checkout_terms_text','maintenance_message','low_stock_threshold'];
-            const checkFields = ['tax_enabled','announcement_enabled','checkout_terms_enabled','guest_checkout_enabled','maintenance_mode'];
+            const textFields = ['store_name','store_tagline','store_description','footer_tagline','contact_email','contact_phone','contact_address','business_hours','currency','order_prefix','min_order_amount','free_shipping_threshold','tax_rate','hero_title','hero_subtitle','hero_cta_text','checkout_terms_text','maintenance_message','low_stock_threshold'];
+            const checkFields = ['tax_enabled','checkout_terms_enabled','guest_checkout_enabled','maintenance_mode'];
             for (const key of textFields) {
                 const el = document.getElementById('set-' + key);
                 if (el && allSiteSettings[key] !== undefined) {
@@ -959,13 +891,6 @@
                     el.checked = allSiteSettings[key] === 'true' || allSiteSettings[key] === true;
                 }
             }
-            const bgText = document.getElementById('set-announcement_bg_text');
-            if (bgText && allSiteSettings.announcement_bg) bgText.value = allSiteSettings.announcement_bg;
-            const tcText = document.getElementById('set-announcement_text_color_text');
-            if (tcText && allSiteSettings.announcement_text_color) tcText.value = allSiteSettings.announcement_text_color;
-            updateAnnouncementPreview();
-            updateHeroBgPreview();
-            updateOgImagePreview();
         }
 
         function showSettingsTab(tab) {
@@ -979,7 +904,7 @@
 
         async function saveBulkSettings(keys) {
             const settings = {};
-            const checkFields = ['tax_enabled','announcement_enabled','checkout_terms_enabled','guest_checkout_enabled','maintenance_mode'];
+            const checkFields = ['tax_enabled','checkout_terms_enabled','guest_checkout_enabled','maintenance_mode'];
             for (const key of keys) {
                 const el = document.getElementById('set-' + key);
                 if (!el) continue;
@@ -1018,9 +943,7 @@
                         contact_email: '', contact_phone: '', contact_address: '', business_hours: '',
                         currency: 'USD', order_prefix: '', min_order_amount: '0', free_shipping_threshold: '0',
                         tax_rate: '0', tax_enabled: 'false',
-                        hero_title: '', hero_subtitle: '', hero_cta_text: '', hero_bg_image: '',
-                        meta_title: '', meta_description: '', meta_keywords: '', og_image: '',
-                        announcement_enabled: 'false', announcement_text: '', announcement_bg: '#e50000', announcement_text_color: '#ffffff',
+                        hero_title: '', hero_subtitle: '', hero_cta_text: '',
                         checkout_terms_enabled: 'false', checkout_terms_text: '',
                         maintenance_mode: 'false', maintenance_message: '',
                         low_stock_threshold: '10', guest_checkout_enabled: 'false'
@@ -1031,25 +954,6 @@
             } catch (err) { showToast('Failed to reset', 'error'); }
         }
 
-        function updateAnnouncementPreview() {
-            const text = document.getElementById('set-announcement_text')?.value || 'Your announcement here';
-            const bg = document.getElementById('set-announcement_bg')?.value || '#e50000';
-            const color = document.getElementById('set-announcement_text_color')?.value || '#ffffff';
-            const prev = document.getElementById('announcement-preview');
-            if (prev) prev.innerHTML = `<div style="padding:10px 16px;background:${bg};color:${color};text-align:center;font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;border-radius:4px;">${text.replace(/</g,'&lt;')}</div><span class="font-mono text-xs text-muted" style="margin-top:6px;display:block;">Preview</span>`;
-        }
-        function updateHeroBgPreview() {
-            const url = document.getElementById('set-hero_bg_image')?.value;
-            const prev = document.getElementById('hero-bg-preview');
-            if (prev && url) prev.innerHTML = `<img src="${url}" style="max-width:300px;max-height:120px;border-radius:8px;border:1px solid var(--border);object-fit:cover;" onerror="this.style.display='none'">`;
-            else if (prev) prev.innerHTML = '';
-        }
-        function updateOgImagePreview() {
-            const url = document.getElementById('set-og_image')?.value;
-            const prev = document.getElementById('og-image-preview');
-            if (prev && url) prev.innerHTML = `<img src="${url}" style="max-width:300px;max-height:120px;border-radius:8px;border:1px solid var(--border);object-fit:cover;" onerror="this.style.display='none'">`;
-            else if (prev) prev.innerHTML = '';
-        }
 
         let currentSocials = [];
 
