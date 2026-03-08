@@ -85,6 +85,14 @@ api/checkout.js        - Original Netlify function (reference only)
 ### Settings
 - `GET /api/settings/shipping` - Get current shipping cost (public)
 - `PUT /api/admin/settings/shipping` - Update shipping cost (admin only)
+- `GET /api/settings/grind` - Get grind section content (public)
+- `PUT /api/admin/settings/grind` - Update grind section (admin only)
+- `GET /api/settings/socials` - Get social links (public)
+- `PUT /api/admin/settings/socials` - Update social links (admin only)
+
+### Error Pages
+- `public/404.html` - Custom 404 page ("Wrong Line")
+- `public/500.html` - Custom 500 page ("Engine Blew")
 
 ### Admin
 - `GET /api/admin/stats` - Dashboard stats (includes monthly revenue, pending orders, low stock, new users)

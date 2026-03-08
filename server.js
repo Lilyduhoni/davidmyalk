@@ -606,6 +606,51 @@ app.put('/api/admin/settings/grind', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/settings/socials', async (req, res) => {
+  try {
+    const result = await pool.query("SELECT value FROM site_settings WHERE key = 'socials'");
+    if (result.rows.length > 0) {
+      res.json(JSON.parse(result.rows[0].value));
+    } else {
+      res.json(getDefaultSocials());
+    }
+  } catch (err) {
+    res.json(getDefaultSocials());
+  }
+});
+
+function getDefaultSocials() {
+  return [
+    { id: 'youtube', name: 'YouTube', url: 'https://www.youtube.com/@davidmyalik', enabled: true, icon: 'youtube' },
+    { id: 'instagram', name: 'Instagram', url: 'https://instagram.com/davidmyalik', enabled: true, icon: 'instagram' },
+    { id: 'twitter', name: 'Twitter / X', url: '', enabled: false, icon: 'twitter' },
+    { id: 'discord', name: 'Discord', url: '', enabled: false, icon: 'discord' },
+    { id: 'tiktok', name: 'TikTok', url: '', enabled: false, icon: 'tiktok' },
+    { id: 'facebook', name: 'Facebook', url: '', enabled: false, icon: 'facebook' }
+  ];
+}
+
+app.put('/api/admin/settings/socials', requireAdmin, async (req, res) => {
+  const { socials } = req.body;
+  if (!Array.isArray(socials)) return res.status(400).json({ error: 'Invalid data' });
+  try {
+    const sanitized = socials.map(s => ({
+      id: String(s.id || '').substring(0, 50),
+      name: String(s.name || '').substring(0, 100),
+      url: String(s.url || '').substring(0, 500),
+      enabled: !!s.enabled,
+      icon: String(s.icon || '').substring(0, 50)
+    }));
+    await pool.query(
+      "INSERT INTO site_settings (key, value) VALUES ('socials', $1) ON CONFLICT (key) DO UPDATE SET value = $1",
+      [JSON.stringify(sanitized)]
+    );
+    res.json({ message: 'Social links updated' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 app.put('/api/admin/settings/shipping', requireAdmin, async (req, res) => {
   const { shippingCost } = req.body;
   const cost = parseFloat(shippingCost);
@@ -937,7 +982,17 @@ app.get('*', (req, res) => {
   if (validPages.includes(page)) {
     return serveHtmlWithOG(req, res, path.join(__dirname, 'public', `${page}.html`));
   }
-  serveHtmlWithOG(req, res, path.join(__dirname, 'public', 'index.html'));
+  if (req.path === '/' || req.path === '') {
+    return serveHtmlWithOG(req, res, path.join(__dirname, 'public', 'index.html'));
+  }
+  res.status(404);
+  serveHtmlWithOG(req, res, path.join(__dirname, 'public', '404.html'));
+});
+
+app.use((err, req, res, next) => {
+  console.error('Server error:', err.message);
+  res.status(500);
+  serveHtmlWithOG(req, res, path.join(__dirname, 'public', '500.html'));
 });
 
 if (process.env.VERCEL) {
